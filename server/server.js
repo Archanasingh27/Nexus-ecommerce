@@ -35,7 +35,7 @@ const server = http.createServer(app);
 // Initialize Real-Time Socket.IO Server
 const io = new SocketIOServer(server, {
   cors: {
-    origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:5176', '*'],
+    origin: (origin, callback) => callback(null, true),
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   },
@@ -102,8 +102,20 @@ io.on('connection', (socket) => {
   });
 });
 
+// Dynamic CORS Configuration to support all Vercel domains, preview deployments, and localhosts
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow any origin (reflect incoming origin)
+    callback(null, true);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+};
+
 // Middlewares
-app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:5176', '*'], credentials: true }));
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(express.json());
 if (process.env.NODE_ENV !== 'production') {
   app.use(morgan('dev'));

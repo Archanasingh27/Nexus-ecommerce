@@ -59,8 +59,14 @@ export const SocketProvider = ({ children }) => {
       : 'http://localhost:5000';
 
     const newSocket = io(socketUrl, {
-      transports: ['websocket', 'polling'],
+      transports: ['polling', 'websocket'],
+      reconnectionAttempts: 2,
+      timeout: 4000,
       withCredentials: true,
+    });
+
+    newSocket.on('connect_error', () => {
+      // Graceful fallback for serverless environments
     });
 
     newSocket.on('connect', () => {

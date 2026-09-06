@@ -17,9 +17,16 @@ export const VendorAuthProvider = ({ children }) => {
       : 'http://localhost:5000';
 
     const socketInstance = io(socketUrl, {
-      transports: ['websocket', 'polling'],
+      transports: ['polling', 'websocket'],
+      reconnectionAttempts: 2,
+      timeout: 4000,
       withCredentials: true,
     });
+
+    socketInstance.on('connect_error', () => {
+      // Graceful fallback for serverless environments
+    });
+
     setSocket(socketInstance);
 
     return () => {

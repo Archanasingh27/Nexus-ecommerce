@@ -18,9 +18,16 @@ export const AdminAuthProvider = ({ children }) => {
       : 'http://localhost:5000';
 
     const socketInstance = io(socketUrl, {
-      transports: ['websocket', 'polling'],
+      transports: ['polling', 'websocket'],
+      reconnectionAttempts: 2,
+      timeout: 4000,
       withCredentials: true,
     });
+
+    socketInstance.on('connect_error', () => {
+      // Graceful fallback for serverless hosting (e.g. Vercel) where persistent websockets are not supported
+    });
+
     setSocket(socketInstance);
 
     return () => {

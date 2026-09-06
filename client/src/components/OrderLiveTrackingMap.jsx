@@ -158,7 +158,13 @@ export const OrderLiveTrackingMap = ({ order }) => {
       : 'http://localhost:5000';
 
     const socket = io(socketUrl, {
-      transports: ['websocket', 'polling'],
+      transports: ['polling', 'websocket'],
+      reconnectionAttempts: 2,
+      timeout: 4000,
+    });
+
+    socket.on('connect_error', () => {
+      // Graceful fallback for serverless hosting
     });
 
     socket.emit('join_order_tracking', order._id);
