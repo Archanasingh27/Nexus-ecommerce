@@ -1,0 +1,137 @@
+import React, { useState } from 'react';
+import { FiMessageSquare, FiX, FiPhone, FiShoppingBag, FiHeadphones } from 'react-icons/fi';
+import { RiWhatsappLine } from 'react-icons/ri';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { VendorContactModal } from './VendorContactModal';
+
+export const FloatingChatButton = () => {
+  const { isAuthenticated, user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  // If on auth page, don't overlap
+  if (location.pathname.startsWith('/auth')) {
+    return null;
+  }
+
+  const defaultSupportVendor = {
+    _id: '65e900000000000000000002',
+    storeName: 'NEXUS Customer Support & Help Desk',
+    phone: '9876543210',
+  };
+
+  return (
+    <>
+      {/* Floating Bottom-Right Trigger Button */}
+      <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-2">
+        {/* Quick Popover Menu */}
+        {isOpen && (
+          <div className="bg-white rounded-3xl p-4 shadow-2xl border-2 border-yellow-300 w-72 space-y-3 animate-in zoom-in-95 duration-150 mb-1">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-teal-50 text-[#0d9488] border border-teal-200 flex items-center justify-center font-bold">
+                  <FiHeadphones className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="text-xs font-black text-slate-900">Live Support & Chat</div>
+                  <div className="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    Online (Indore Desk)
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="p-1 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 cursor-pointer"
+              >
+                <FiX className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              {/* Option 1: Live In-App Chat with Sellers / Helpdesk */}
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  if (!isAuthenticated) {
+                    navigate('/auth?redirect=orders');
+                  } else {
+                    setModalOpen(true);
+                  }
+                }}
+                className="w-full flex items-center justify-between p-2.5 rounded-xl bg-[#fffdf5] hover:bg-yellow-50 border border-yellow-300 transition-all text-left group cursor-pointer shadow-2xs"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-teal-600 text-white flex items-center justify-center font-bold">
+                    <FiMessageSquare className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-extrabold text-slate-900">Chat with Seller / Support</div>
+                    <div className="text-[10px] text-slate-500">Instant Real-Time Chat</div>
+                  </div>
+                </div>
+              </button>
+
+              {/* Option 2: Direct WhatsApp Support */}
+              <a
+                href="https://wa.me/919876543210?text=Hi%20NEXUS%20Support,%20I%20need%20help%20with%20my%20order"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full flex items-center justify-between p-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100/70 border border-emerald-300 transition-all text-left group shadow-2xs"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-[#25D366] text-white flex items-center justify-center font-bold">
+                    <RiWhatsappLine className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-extrabold text-emerald-950">WhatsApp Helpdesk</div>
+                    <div className="text-[10px] text-emerald-700">+91 98765 43210</div>
+                  </div>
+                </div>
+              </a>
+
+              {/* Option 3: Phone Calling */}
+              <a
+                href="tel:9876543210"
+                className="w-full flex items-center justify-between p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-all text-left group shadow-2xs"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-slate-800 text-white flex items-center justify-center font-bold">
+                    <FiPhone className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-extrabold text-slate-900">Toll-Free Helpline</div>
+                    <div className="text-[10px] text-slate-500">Call Indore Central Office</div>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        )}
+
+        {/* Floating Bubble Icon */}
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex items-center gap-2 px-4 py-3 bg-[#0d9488] hover:bg-teal-700 text-white rounded-full font-black text-xs shadow-xl shadow-teal-600/30 border-2 border-white transition-all transform hover:scale-105 active:scale-95 cursor-pointer"
+          title="Customer Chat & Support"
+        >
+          <FiMessageSquare className="w-5 h-5 text-[#fae125]" />
+          <span className="hidden sm:inline">Help & Chat</span>
+        </button>
+      </div>
+
+      {/* In-App Live Chat Modal */}
+      {modalOpen && (
+        <VendorContactModal
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          vendor={defaultSupportVendor}
+        />
+      )}
+    </>
+  );
+};

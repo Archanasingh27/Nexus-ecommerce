@@ -1,0 +1,191 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #eaf6f6;
+    color: #0f172a;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    background-image: 
+      radial-gradient(at 10% 15%, rgba(204, 251, 241, 0.8) 0px, transparent 50%),
+      radial-gradient(at 90% 10%, rgba(254, 249, 195, 0.65) 0px, transparent 50%),
+      radial-gradient(at 50% 50%, rgba(240, 253, 250, 0.9) 0px, transparent 60%),
+      radial-gradient(at 80% 85%, rgba(204, 251, 241, 0.7) 0px, transparent 50%),
+      radial-gradient(at 20% 85%, rgba(254, 240, 138, 0.5) 0px, transparent 50%);
+    background-attachment: fixed;
+    background-size: cover;
+  }
+}
+
+::selection {
+  background-color: #fae125;
+  color: #000000;
+}
+
+/* Custom modern scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #e5f3f3;
+}
+::-webkit-scrollbar-thumb {
+  background: #99f6e4;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #0d9488;
+}
+
+/* =========================================================
+   COMPREHENSIVE GLASSMORPHISM DESIGN SYSTEM (CLIENT)
+   ========================================================= */
+
+/* Main Frosted Glass Container */
+.glass {
+  background: rgba(255, 253, 240, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(250, 225, 37, 0.45);
+  box-shadow: 0 10px 30px -5px rgba(250, 225, 37, 0.14), 0 4px 10px -2px rgba(202, 138, 4, 0.04);
+}
+
+/* Glass Panel for sections & wrappers with warm yellow finish */
+.glass-panel {
+  background: rgba(255, 254, 242, 0.78);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(250, 225, 37, 0.40);
+  box-shadow: 0 12px 36px -6px rgba(250, 225, 37, 0.15), inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
+  border-radius: 1.5rem;
+}
+
+/* Glass Card for Products, Deals, and Banners with Yellow Polish */
+.glass-card {
+  background: rgba(255, 253, 235, 0.86);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(250, 225, 37, 0.50);
+  box-shadow: 0 10px 25px -5px rgba(250, 225, 37, 0.18), 0 4px 10px -2px rgba(202, 138, 4, 0.05), inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
+  border-radius: 1.5rem;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 245, 0.98);
+  border-color: rgba(250, 225, 37, 0.95);
+  box-shadow: 0 20px 45px -8px rgba(250, 225, 37, 0.32), 0 0 25px -4px rgba(250, 225, 37, 0.25), inset 0 1px 2px 0 rgba(255, 255, 255, 1);
+  transform: translateY(-4px);
+}
+
+/* Brand Warm Glass Card (Yellow/Amber Glow) */
+.glass-card-brand {
+  background: rgba(255, 253, 230, 0.90);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1.5px solid rgba(250, 225, 37, 0.70);
+  box-shadow: 0 12px 30px -5px rgba(250, 225, 37, 0.25), 0 0 20px 0 rgba(250, 225, 37, 0.12), inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
+  border-radius: 1.5rem;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card-brand:hover {
+  background: rgba(255, 255, 240, 0.98);
+  border-color: #fae125;
+  box-shadow: 0 22px 48px -8px rgba(250, 225, 37, 0.40), 0 0 30px 0 rgba(250, 225, 37, 0.30), inset 0 1px 2px 0 rgba(255, 255, 255, 1);
+  transform: translateY(-4px);
+}
+
+/* Glass Navigation Bar */
+.glass-nav {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(250, 225, 37, 0.45);
+  box-shadow: 0 6px 24px -4px rgba(250, 225, 37, 0.12);
+}
+
+/* Glass Dropdown / Popup Menus */
+.glass-dropdown {
+  background: rgba(255, 254, 245, 0.95);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(250, 225, 37, 0.50);
+  box-shadow: 0 16px 40px -8px rgba(250, 225, 37, 0.22), 0 6px 14px -3px rgba(0, 0, 0, 0.05), inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
+  border-radius: 1.25rem;
+}
+
+/* Glass Modals & Drawers */
+.glass-modal {
+  background: rgba(255, 254, 245, 0.94);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  border: 1px solid rgba(250, 225, 37, 0.55);
+  box-shadow: 0 25px 60px -12px rgba(250, 225, 37, 0.25), inset 0 1px 2px 0 rgba(255, 255, 255, 1);
+  border-radius: 2rem;
+}
+
+/* Glass Sidebar for Filters & Navigation */
+.glass-sidebar {
+  background: rgba(255, 254, 245, 0.88);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1.5px solid rgba(250, 225, 37, 0.65);
+  box-shadow: 0 16px 40px -8px rgba(250, 225, 37, 0.20), 0 4px 12px -2px rgba(0, 0, 0, 0.04), inset 0 1px 2px 0 rgba(255, 255, 255, 0.95);
+  border-radius: 1.75rem;
+}
+
+/* Glass Pill Badge & Tag */
+.glass-pill {
+  background: rgba(255, 253, 235, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(250, 225, 37, 0.60);
+  box-shadow: 0 2px 10px -1px rgba(250, 225, 37, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* Glass Input Fields */
+.glass-input {
+  background: rgba(255, 255, 255, 0.80);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(250, 225, 37, 0.60);
+  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+  transition: all 0.25s ease;
+}
+
+.glass-input:focus {
+  background: rgba(255, 255, 255, 0.98);
+  border-color: #fae125;
+  box-shadow: 0 0 0 3px rgba(250, 225, 37, 0.30), inset 0 1px 2px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* Gradient Border Refraction */
+.gradient-border {
+  position: relative;
+  border-radius: 1.25rem;
+}
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(250, 225, 37, 0.8), rgba(13, 148, 136, 0.8), rgba(45, 212, 191, 0.8));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
