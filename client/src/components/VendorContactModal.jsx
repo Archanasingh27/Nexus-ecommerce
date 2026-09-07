@@ -8,16 +8,10 @@ import {
   FiPhone,
   FiMessageSquare,
   FiSend,
-  FiCheck,
   FiCheckCircle,
   FiShoppingBag,
   FiPackage,
-  FiClock,
-  FiShield,
-  FiExternalLink,
 } from 'react-icons/fi';
-import { RiWhatsappLine } from 'react-icons/ri';
-import { formatDate } from '../utils/helpers';
 
 export const VendorContactModal = ({
   isOpen,
@@ -29,7 +23,7 @@ export const VendorContactModal = ({
   const { user, isAuthenticated } = useAuth();
   const { addToast } = useToast();
 
-  const [activeTab, setActiveTab] = useState('chat'); // 'chat' | 'call' | 'whatsapp'
+  const [activeTab, setActiveTab] = useState('chat'); // 'chat' | 'call'
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
   const [loadingMessages, setLoadingMessages] = useState(false);
@@ -164,17 +158,6 @@ export const VendorContactModal = ({
 
   if (!isOpen) return null;
 
-  // WhatsApp Pre-filled text
-  const waContextText = order
-    ? `Hello ${vendorName}, I am contacting you regarding Order #${order.orderNumber} placed on NEXUS Commerce.`
-    : product
-    ? `Hello ${vendorName}, I have a question regarding "${product.name}" on NEXUS Commerce.`
-    : `Hello ${vendorName}, I would like to inquire about products from your store on NEXUS Commerce.`;
-
-  const waUrl = `https://wa.me/91${cleanPhone.length === 10 ? cleanPhone : '9876543210'}?text=${encodeURIComponent(
-    waContextText
-  )}`;
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
       <div className="bg-white w-full max-w-xl rounded-3xl shadow-2xl border border-slate-100 flex flex-col overflow-hidden max-h-[90vh] sm:max-h-[640px]">
@@ -196,7 +179,7 @@ export const VendorContactModal = ({
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors cursor-pointer"
           >
             <FiX className="w-4 h-4" />
           </button>
@@ -206,7 +189,7 @@ export const VendorContactModal = ({
         <div className="flex border-b border-slate-100 bg-slate-50/70 p-1.5 gap-1.5 text-xs font-bold">
           <button
             onClick={() => setActiveTab('chat')}
-            className={`flex-1 py-2 rounded-xl flex items-center justify-center gap-2 transition-all ${
+            className={`flex-1 py-2 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${
               activeTab === 'chat'
                 ? 'bg-white text-teal-700 shadow-xs border border-slate-200/80'
                 : 'text-slate-600 hover:bg-white/50'
@@ -216,23 +199,13 @@ export const VendorContactModal = ({
           </button>
           <button
             onClick={() => setActiveTab('call')}
-            className={`flex-1 py-2 rounded-xl flex items-center justify-center gap-2 transition-all ${
+            className={`flex-1 py-2 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${
               activeTab === 'call'
                 ? 'bg-white text-teal-700 shadow-xs border border-slate-200/80'
                 : 'text-slate-600 hover:bg-white/50'
             }`}
           >
             <FiPhone className="w-3.5 h-3.5" /> Direct Call
-          </button>
-          <button
-            onClick={() => setActiveTab('whatsapp')}
-            className={`flex-1 py-2 rounded-xl flex items-center justify-center gap-2 transition-all ${
-              activeTab === 'whatsapp'
-                ? 'bg-white text-emerald-700 shadow-xs border border-slate-200/80'
-                : 'text-slate-600 hover:bg-white/50'
-            }`}
-          >
-            <RiWhatsappLine className="w-4 h-4 text-emerald-600" /> WhatsApp
           </button>
         </div>
 
@@ -286,7 +259,7 @@ export const VendorContactModal = ({
                       <button
                         key={idx}
                         onClick={() => handleSendMessage(prompt)}
-                        className="text-[11px] bg-white hover:bg-teal-50 hover:text-teal-700 hover:border-teal-300 border border-slate-200 rounded-xl px-3 py-1.5 text-slate-600 font-medium transition-all shadow-2xs text-left"
+                        className="text-[11px] bg-white hover:bg-teal-50 hover:text-teal-700 hover:border-teal-300 border border-slate-200 rounded-xl px-3 py-1.5 text-slate-600 font-medium transition-all shadow-2xs text-left cursor-pointer"
                       >
                         "{prompt}"
                       </button>
@@ -355,7 +328,7 @@ export const VendorContactModal = ({
                 <button
                   type="submit"
                   disabled={sending || !inputText.trim()}
-                  className="w-10 h-10 rounded-2xl bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white flex items-center justify-center transition-all shadow-xs shrink-0"
+                  className="w-10 h-10 rounded-2xl bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white flex items-center justify-center transition-all shadow-xs shrink-0 cursor-pointer"
                 >
                   <FiSend className="w-4 h-4" />
                 </button>
@@ -374,53 +347,21 @@ export const VendorContactModal = ({
             <div>
               <h4 className="font-bold text-slate-800 text-base">Direct Voice Call Support</h4>
               <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-                Connect directly with the store manager at <span className="font-semibold text-slate-700">{vendorName}</span> for immediate updates.
+                Connect directly with <span className="font-semibold text-slate-700">{vendorName}</span> for immediate updates.
               </p>
             </div>
 
             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 max-w-sm mx-auto space-y-1">
-              <div className="text-[11px] uppercase font-bold tracking-wider text-slate-400">Verified Seller Hotline</div>
+              <div className="text-[11px] uppercase font-bold tracking-wider text-slate-400">Contact Hotline</div>
               <div className="text-lg font-mono font-black text-slate-900">+91 {cleanPhone || '9876543210'}</div>
               <div className="text-[10px] text-teal-700 font-semibold">Available Mon - Sat (10:00 AM - 8:00 PM)</div>
             </div>
 
             <a
               href={`tel:+91${cleanPhone || '9876543210'}`}
-              className="inline-flex items-center justify-center gap-2 w-full max-w-sm py-3.5 bg-gradient-to-r from-teal-700 to-teal-600 hover:from-teal-800 hover:to-teal-700 text-white font-bold text-sm rounded-2xl shadow-md shadow-teal-700/20 transition-all transform active:scale-98"
+              className="inline-flex items-center justify-center gap-2 w-full max-w-sm py-3.5 bg-gradient-to-r from-teal-700 to-teal-600 hover:from-teal-800 hover:to-teal-700 text-white font-bold text-sm rounded-2xl shadow-md shadow-teal-700/20 transition-all transform active:scale-98 cursor-pointer"
             >
-              <FiPhone className="w-4 h-4" /> Call Seller Now
-            </a>
-          </div>
-        )}
-
-        {/* TAB 3: WHATSAPP CHAT */}
-        {activeTab === 'whatsapp' && (
-          <div className="p-6 text-center space-y-6">
-            <div className="w-16 h-16 rounded-3xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center mx-auto shadow-sm">
-              <RiWhatsappLine className="w-8 h-8" />
-            </div>
-
-            <div>
-              <h4 className="font-bold text-slate-800 text-base">Instant WhatsApp Support</h4>
-              <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-                Launch a direct WhatsApp chat thread with <span className="font-semibold text-slate-700">{vendorName}</span> with your order or product context pre-filled.
-              </p>
-            </div>
-
-            <div className="p-4 bg-emerald-50/50 rounded-2xl border border-emerald-100 max-w-sm mx-auto text-left text-xs text-emerald-950 font-medium">
-              <div className="text-[10px] uppercase font-bold text-emerald-700 mb-1">Pre-filled Message Preview:</div>
-              <p className="italic bg-white p-3 rounded-xl border border-emerald-100 text-slate-700">
-                "{waContextText}"
-              </p>
-            </div>
-
-            <a
-              href={waUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 w-full max-w-sm py-3.5 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white font-bold text-sm rounded-2xl shadow-md shadow-emerald-600/20 transition-all transform active:scale-98"
-            >
-              <RiWhatsappLine className="w-5 h-5" /> Open WhatsApp Chat <FiExternalLink className="w-3.5 h-3.5" />
+              <FiPhone className="w-4 h-4" /> Call Now
             </a>
           </div>
         )}

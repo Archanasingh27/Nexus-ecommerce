@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { FiMessageSquare, FiX, FiPhone, FiShoppingBag, FiHeadphones } from 'react-icons/fi';
-import { RiWhatsappLine } from 'react-icons/ri';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { VendorContactModal } from './VendorContactModal';
@@ -20,7 +19,7 @@ export const FloatingChatButton = () => {
 
   const defaultSupportVendor = {
     _id: '65e900000000000000000002',
-    storeName: 'NEXUS Customer Support & Help Desk',
+    storeName: 'NEXUS Admin Support & Help Desk',
     phone: '9876543210',
   };
 
@@ -37,10 +36,10 @@ export const FloatingChatButton = () => {
                   <FiHeadphones className="w-4 h-4" />
                 </div>
                 <div>
-                  <div className="text-xs font-black text-slate-900">Live Support & Chat</div>
+                  <div className="text-xs font-black text-slate-900">Admin Support & Chat</div>
                   <div className="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    Online (Indore Desk)
+                    Online (Central Desk)
                   </div>
                 </div>
               </div>
@@ -53,7 +52,7 @@ export const FloatingChatButton = () => {
             </div>
 
             <div className="space-y-2">
-              {/* Option 1: Live In-App Chat with Sellers / Helpdesk */}
+              {/* Option 1: Live In-App Chat with Admin Support */}
               <button
                 onClick={() => {
                   setIsOpen(false);
@@ -70,31 +69,13 @@ export const FloatingChatButton = () => {
                     <FiMessageSquare className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="text-xs font-extrabold text-slate-900">Chat with Seller / Support</div>
+                    <div className="text-xs font-extrabold text-slate-900">Chat with Admin Support</div>
                     <div className="text-[10px] text-slate-500">Instant Real-Time Chat</div>
                   </div>
                 </div>
               </button>
 
-              {/* Option 2: Direct WhatsApp Support */}
-              <a
-                href="https://wa.me/919876543210?text=Hi%20NEXUS%20Support,%20I%20need%20help%20with%20my%20order"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full flex items-center justify-between p-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100/70 border border-emerald-300 transition-all text-left group shadow-2xs"
-              >
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-[#25D366] text-white flex items-center justify-center font-bold">
-                    <RiWhatsappLine className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <div className="text-xs font-extrabold text-emerald-950">WhatsApp Helpdesk</div>
-                    <div className="text-[10px] text-emerald-700">+91 98765 43210</div>
-                  </div>
-                </div>
-              </a>
-
-              {/* Option 3: Phone Calling */}
+              {/* Option 2: Phone Calling (Admin) */}
               <a
                 href="tel:9876543210"
                 className="w-full flex items-center justify-between p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-all text-left group shadow-2xs"
@@ -104,8 +85,8 @@ export const FloatingChatButton = () => {
                     <FiPhone className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="text-xs font-extrabold text-slate-900">Toll-Free Helpline</div>
-                    <div className="text-[10px] text-slate-500">Call Indore Central Office</div>
+                    <div className="text-xs font-extrabold text-slate-900">Admin Helpline</div>
+                    <div className="text-[10px] text-slate-500">+91 98765 43210</div>
                   </div>
                 </div>
               </a>
