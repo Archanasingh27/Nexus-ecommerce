@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import { io } from 'socket.io-client';
 import { useToast } from './ToastContext';
 import { useAuth } from './AuthContext';
 import api from '../api/axios';
@@ -6,15 +7,110 @@ import confetti from 'canvas-confetti';
 
 const CartContext = createContext();
 
+export const DEFAULT_DELIVERY_OPTIONS = [
+  {
+    id: 'instant',
+    name: 'Instant Delivery',
+    time: '30 - 45 Mins',
+    icon: '⚡',
+    description: 'Direct hyper-local courier from nearest merchant hub',
+    badge: 'Fastest Delivery',
+    price: 49,
+    discountedPrice: 49,
+    freeAbove: 0,
+    isActive: true,
+    isDefault: false,
+  },
+  {
+    id: '4hour',
+    name: '4-Hour Express',
+    time: 'Within 4 Hours',
+    icon: '🕒',
+    description: 'Standard same-day fast fulfillment across Indore',
+    badge: 'Most Popular',
+    price: 39,
+    discountedPrice: 0,
+    freeAbove: 999,
+    isActive: true,
+    isDefault: true,
+  },
+  {
+    id: 'nextday',
+    name: 'Next Day Delivery',
+    time: 'Tomorrow by 2:00 PM',
+    icon: '🚚',
+    description: 'Scheduled next-day eco delivery slot',
+    badge: 'Free Delivery',
+    price: 0,
+    discountedPrice: 0,
+    freeAbove: 0,
+    isActive: true,
+    isDefault: false,
+  },
+];
+
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState(() => {
     const saved = localStorage.getItem('nexus_cart');
     return saved ? JSON.parse(saved) : [];
   });
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [coupon, setCoupon] = useState(null); // e.g. { code: 'INDORE50', discountAmount: 250, ... }
+  const [coupon, setCoupon] = useState(null);
+  const [deliveryOptions, setDeliveryOptions] = useState(DEFAULT_DELIVERY_OPTIONS);
+  const [deliveryOption, setDeliveryOption] = useState('4hour');
   const { addToast } = useToast();
   const { isAuthenticated } = useAuth();
+
+  // 1. Fetch Dynamic Delivery Options from Admin Config
+  const fetchDeliveryConfig = async () => {
+    try {
+      const { data } = await api.get('/delivery/config');
+      if (data?.config?.deliveryOptions && Array.isArray(data.config.deliveryOptions)) {
+        const activeOpts = data.config.deliveryOptions.filter((opt) => opt.isActive !== false);
+        if (activeOpts.length > 0) {
+          setDeliveryOptions(activeOpts);
+          // If current deliveryOption is not in activeOpts, set default
+          const defaultOpt = activeOpts.find((o) => o.isDefault) || activeOpts[0];
+          setDeliveryOption((prev) => {
+            const exists = activeOpts.some((o) => o.id === prev);
+            return exists ? prev : defaultOpt.id;
+          });
+        }
+      }
+    } catch (err) {
+      console.warn('Using default delivery options fallback:', err.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchDeliveryConfig();
+  }, []);
+
+  // 2. Real-Time Socket listener for live Admin Delivery Options updates
+  useEffect(() => {
+    const socketUrl = import.meta.env.VITE_API_URL
+      ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '')
+      : 'http://localhost:5000';
+
+    const socket = io(socketUrl, {
+      transports: ['polling', 'websocket'],
+      reconnectionAttempts: 2,
+      timeout: 4000,
+    });
+
+    socket.on('delivery_config_updated', (newConfig) => {
+      if (newConfig?.deliveryOptions && Array.isArray(newConfig.deliveryOptions)) {
+        const activeOpts = newConfig.deliveryOptions.filter((opt) => opt.isActive !== false);
+        if (activeOpts.length > 0) {
+          setDeliveryOptions(activeOpts);
+        }
+      }
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -140,9 +236,28 @@ export const CartProvider = ({ children }) => {
     discountPrice = (itemsPrice * coupon.discountPercent) / 100;
   }
 
-  const shippingThreshold = 1499;
-  const isFreeShipping = itemsPrice >= shippingThreshold || coupon?.freeShipping;
-  const shippingPrice = itemsCount === 0 ? 0 : (isFreeShipping ? 0 : 99);
+  const selectedDeliveryOptionObj = useMemo(() => {
+    return (
+      deliveryOptions.find((opt) => opt.id === deliveryOption) ||
+      deliveryOptions.find((opt) => opt.isDefault) ||
+      deliveryOptions[0] ||
+      DEFAULT_DELIVERY_OPTIONS[0]
+    );
+  }, [deliveryOptions, deliveryOption]);
+
+  // Dynamic Shipping Price Calculation based on Admin configuration
+  const shippingPrice = useMemo(() => {
+    if (itemsCount === 0) return 0;
+    if (coupon?.freeShipping) return 0;
+    if (!selectedDeliveryOptionObj) return 0;
+
+    const { price = 0, freeAbove = 0, discountedPrice } = selectedDeliveryOptionObj;
+    if (freeAbove > 0 && itemsPrice >= freeAbove) {
+      return discountedPrice !== undefined ? discountedPrice : 0;
+    }
+    return price;
+  }, [itemsCount, coupon, selectedDeliveryOptionObj, itemsPrice]);
+
   const taxPrice = Math.round((itemsPrice - discountPrice) * 0.08 * 100) / 100;
   const totalPrice = Math.max(0, Math.round((itemsPrice - discountPrice + shippingPrice + taxPrice) * 100) / 100);
 
@@ -162,11 +277,17 @@ export const CartProvider = ({ children }) => {
         itemsCount,
         itemsPrice,
         discountPrice,
+        deliveryOption,
+        setDeliveryOption,
+        selectedDeliveryOptionObj,
+        deliveryOptions,
         shippingPrice,
         taxPrice,
         totalPrice,
-        shippingThreshold,
-        freeShippingRemaining: Math.max(0, shippingThreshold - itemsPrice),
+        shippingThreshold: selectedDeliveryOptionObj?.freeAbove || 999,
+        freeShippingRemaining: selectedDeliveryOptionObj?.freeAbove
+          ? Math.max(0, selectedDeliveryOptionObj.freeAbove - itemsPrice)
+          : 0,
       }}
     >
       {children}

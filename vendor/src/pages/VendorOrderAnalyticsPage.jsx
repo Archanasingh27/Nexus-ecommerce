@@ -29,6 +29,7 @@ import {
 } from 'recharts';
 import api from '../api/axios';
 import { useVendorAuth } from '../context/VendorAuthContext';
+import { StatCard } from '../components/StatCard';
 import { useToast } from '../context/ToastContext';
 
 const STATUS_COLORS = {
@@ -127,33 +128,37 @@ export const VendorOrderAnalyticsPage = () => {
         </div>
       </div>
 
-      {/* KPI Cards Strip */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <div className="glass-card p-5 space-y-2">
-          <span className="text-[11px] font-black uppercase text-slate-400">Total Store Orders</span>
-          <div className="text-2xl font-black text-slate-900 font-mono">{stats?.totalOrders || 0}</div>
-          <div className="text-[10px] text-emerald-700 font-bold">✓ {stats?.completedOrdersCount || 0} Delivered</div>
-        </div>
-
-        <div className="glass-card p-5 space-y-2">
-          <span className="text-[11px] font-black uppercase text-slate-400">Net Merchant Earnings</span>
-          <div className="text-2xl font-black text-orange-600 font-mono">₹{stats?.totalRevenue?.toLocaleString('en-IN') || 0}</div>
-          <div className="text-[10px] text-slate-500 font-medium">{stats?.commissionRate || 10}% fee deducted</div>
-        </div>
-
-        <div className="glass-card p-5 space-y-2">
-          <span className="text-[11px] font-black uppercase text-slate-400">Avg. Order Value (AOV)</span>
-          <div className="text-2xl font-black text-blue-600 font-mono">₹{stats?.averageOrderValue?.toLocaleString('en-IN') || 0}</div>
-          <div className="text-[10px] text-blue-600 font-bold">Per customer transaction</div>
-        </div>
-
-        <div className="glass-card p-5 space-y-2">
-          <span className="text-[11px] font-black uppercase text-slate-400">Orders Awaiting Action</span>
-          <div className="text-2xl font-black text-amber-700 font-mono">
-            {(stats?.pendingOrdersCount || 0) + (stats?.confirmedOrdersCount || 0)}
-          </div>
-          <div className="text-[10px] text-amber-800 font-bold">Confirm or pack now</div>
-        </div>
+      {/* KPI Cards Strip (Compact 2-col on Mobile) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-5">
+        <StatCard
+          title="Total Store Orders"
+          value={stats?.totalOrders || 0}
+          change={`✓ ${stats?.completedOrdersCount || 0} Delivered`}
+          isPositive={true}
+          icon={<FiShoppingBag />}
+          color="orange"
+        />
+        <StatCard
+          title="Net Merchant Earnings"
+          value={`₹${stats?.totalRevenue?.toLocaleString('en-IN') || 0}`}
+          subtitle={`${stats?.commissionRate || 10}% fee deducted`}
+          icon={<span className="font-black text-sm">₹</span>}
+          color="emerald"
+        />
+        <StatCard
+          title="Avg. Order Value (AOV)"
+          value={`₹${stats?.averageOrderValue?.toLocaleString('en-IN') || 0}`}
+          subtitle="Per customer transaction"
+          icon={<FiCreditCard />}
+          color="blue"
+        />
+        <StatCard
+          title="Orders Awaiting Action"
+          value={(stats?.pendingOrdersCount || 0) + (stats?.confirmedOrdersCount || 0)}
+          subtitle="Confirm or pack now"
+          icon={<FiClock />}
+          color="amber"
+        />
       </div>
 
       {/* 2-Column Graph Section: Main 14-Day Trajectory (8 cols) + Pipeline Share Donut (4 cols) */}

@@ -5,21 +5,17 @@ import { useToast } from './ToastContext';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const { addToast } = useToast();
-
-  useEffect(() => {
-    const savedUser = localStorage.getItem('nexus_user_info');
-    if (savedUser) {
-      try {
-        setUser(JSON.parse(savedUser));
-      } catch (e) {
-        localStorage.removeItem('nexus_user_info');
-      }
+  const [user, setUser] = useState(() => {
+    try {
+      const savedUser = localStorage.getItem('nexus_user_info');
+      return savedUser ? JSON.parse(savedUser) : null;
+    } catch (e) {
+      localStorage.removeItem('nexus_user_info');
+      return null;
     }
-    setLoading(false);
-  }, []);
+  });
+  const [loading, setLoading] = useState(false);
+  const { addToast } = useToast();
 
   const login = async (email, password) => {
     try {

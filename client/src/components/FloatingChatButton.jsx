@@ -1,27 +1,19 @@
 import React, { useState } from 'react';
-import { FiMessageSquare, FiX, FiPhone, FiShoppingBag, FiHeadphones } from 'react-icons/fi';
+import { FiMessageSquare, FiX, FiPhone, FiHeadphones, FiArrowRight } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { VendorContactModal } from './VendorContactModal';
 
 export const FloatingChatButton = () => {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const [isOpen, setIsOpen] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
 
-  // If on auth page, don't overlap
-  if (location.pathname.startsWith('/auth')) {
+  // If on auth or support page, don't overlap
+  if (location.pathname.startsWith('/auth') || location.pathname.startsWith('/support')) {
     return null;
   }
-
-  const defaultSupportVendor = {
-    _id: '65e900000000000000000002',
-    storeName: 'NEXUS Admin Support & Help Desk',
-    phone: '9876543210',
-  };
 
   return (
     <>
@@ -56,11 +48,7 @@ export const FloatingChatButton = () => {
               <button
                 onClick={() => {
                   setIsOpen(false);
-                  if (!isAuthenticated) {
-                    navigate('/auth?redirect=orders');
-                  } else {
-                    setModalOpen(true);
-                  }
+                  navigate('/support');
                 }}
                 className="w-full flex items-center justify-between p-2.5 rounded-xl bg-[#fffdf5] hover:bg-yellow-50 border border-yellow-300 transition-all text-left group cursor-pointer shadow-2xs"
               >
@@ -69,15 +57,16 @@ export const FloatingChatButton = () => {
                     <FiMessageSquare className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="text-xs font-extrabold text-slate-900">Chat with Admin Support</div>
-                    <div className="text-[10px] text-slate-500">Instant Real-Time Chat</div>
+                    <div className="text-xs font-extrabold text-slate-900">Nexus Support Desk</div>
+                    <div className="text-[10px] text-slate-500">Instant Help & Chat</div>
                   </div>
                 </div>
+                <FiArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-teal-700" />
               </button>
 
               {/* Option 2: Phone Calling (Admin) */}
               <a
-                href="tel:9876543210"
+                href="tel:18004196398"
                 className="w-full flex items-center justify-between p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-all text-left group shadow-2xs"
               >
                 <div className="flex items-center gap-2.5">
@@ -85,8 +74,8 @@ export const FloatingChatButton = () => {
                     <FiPhone className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="text-xs font-extrabold text-slate-900">Admin Helpline</div>
-                    <div className="text-[10px] text-slate-500">+91 98765 43210</div>
+                    <div className="text-xs font-extrabold text-slate-900">Toll-Free Helpline</div>
+                    <div className="text-[10px] text-slate-500">1800-419-6398</div>
                   </div>
                 </div>
               </a>
@@ -104,15 +93,6 @@ export const FloatingChatButton = () => {
           <span className="hidden sm:inline">Help & Chat</span>
         </button>
       </div>
-
-      {/* In-App Live Chat Modal */}
-      {modalOpen && (
-        <VendorContactModal
-          isOpen={modalOpen}
-          onClose={() => setModalOpen(false)}
-          vendor={defaultSupportVendor}
-        />
-      )}
     </>
   );
 };

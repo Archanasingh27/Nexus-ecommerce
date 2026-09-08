@@ -16,7 +16,7 @@ export const ProductModal = ({ isOpen, onClose, product, categories = [], onSave
     brand: 'Nexus Labs',
     countInStock: 20,
     description: '',
-    images: ['https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800'],
+    images: [],
     isFeatured: false,
     isTrending: false,
     isNewArrival: true,

@@ -302,54 +302,54 @@ export const ProductAnalyticsPage = () => {
       </div>
 
       {/* 4 KPI CARDS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6">
         
         {/* Total Products */}
-        <div className="bg-white border border-slate-200/90 p-5 rounded-3xl space-y-2 relative overflow-hidden shadow-xs hover:border-slate-300 transition-all">
-          <div className="flex justify-between items-center text-slate-500">
-            <span className="text-xs font-bold uppercase tracking-wider">Total Products</span>
-            <div className="w-8 h-8 rounded-xl bg-sky-50 text-sky-700 border border-sky-200 flex items-center justify-center font-bold">
-              <FiBox className="w-4 h-4 text-sky-700" />
+        <div className="bg-white border border-slate-200/90 p-3 sm:p-5 rounded-2xl sm:rounded-3xl space-y-1 sm:space-y-2 relative overflow-hidden shadow-xs hover:border-slate-300 transition-all">
+          <div className="flex justify-between items-center text-slate-500 gap-1">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider truncate">Total Products</span>
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-sky-50 text-sky-700 border border-sky-200 flex items-center justify-center font-bold shrink-0">
+              <FiBox className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sky-700" />
             </div>
           </div>
-          <div className="text-2xl font-black text-slate-900">{totalProductsCount}</div>
-          <span className="text-[11px] font-bold text-slate-500">Active catalog items</span>
+          <div className="text-base sm:text-2xl font-black text-slate-900 truncate">{totalProductsCount}</div>
+          <span className="text-[9px] sm:text-[11px] font-bold text-slate-500 truncate block">Active catalog</span>
         </div>
 
         {/* Total Sold Products */}
-        <div className="bg-white border border-slate-200/90 p-5 rounded-3xl space-y-2 relative overflow-hidden shadow-xs hover:border-slate-300 transition-all">
-          <div className="flex justify-between items-center text-slate-500">
-            <span className="text-xs font-bold uppercase tracking-wider">Total Sold Products</span>
-            <div className="w-8 h-8 rounded-xl bg-[#fae125] text-slate-950 border border-yellow-400 flex items-center justify-center font-black">
-              <FiShoppingBag className="w-4 h-4 text-black" />
+        <div className="bg-white border border-slate-200/90 p-3 sm:p-5 rounded-2xl sm:rounded-3xl space-y-1 sm:space-y-2 relative overflow-hidden shadow-xs hover:border-slate-300 transition-all">
+          <div className="flex justify-between items-center text-slate-500 gap-1">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider truncate">Units Sold</span>
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-[#fae125] text-slate-950 border border-yellow-400 flex items-center justify-center font-black shrink-0">
+              <FiShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black" />
             </div>
           </div>
-          <div className="text-2xl font-black text-slate-900">{totalUnitsSold} <span className="text-xs text-slate-400 font-semibold">units</span></div>
-          <span className="text-[11px] font-bold text-slate-500">Total units dispatched</span>
+          <div className="text-base sm:text-2xl font-black text-slate-900 truncate">{totalUnitsSold} <span className="text-[10px] sm:text-xs text-slate-400 font-semibold">units</span></div>
+          <span className="text-[9px] sm:text-[11px] font-bold text-slate-500 truncate block">Dispatched</span>
         </div>
 
         {/* Total Orders */}
-        <div className="bg-white border border-slate-200/90 p-5 rounded-3xl space-y-2 relative overflow-hidden shadow-xs hover:border-slate-300 transition-all">
-          <div className="flex justify-between items-center text-slate-500">
-            <span className="text-xs font-bold uppercase tracking-wider">Total Orders</span>
-            <div className="w-8 h-8 rounded-xl bg-teal-50 text-teal-700 border border-teal-200 flex items-center justify-center font-bold">
-              <FiLayers className="w-4 h-4 text-teal-700" />
+        <div className="bg-white border border-slate-200/90 p-3 sm:p-5 rounded-2xl sm:rounded-3xl space-y-1 sm:space-y-2 relative overflow-hidden shadow-xs hover:border-slate-300 transition-all">
+          <div className="flex justify-between items-center text-slate-500 gap-1">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider truncate">Total Orders</span>
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-teal-50 text-teal-700 border border-teal-200 flex items-center justify-center font-bold shrink-0">
+              <FiLayers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-teal-700" />
             </div>
           </div>
-          <div className="text-2xl font-black text-slate-900">{totalOrdersCount}</div>
-          <span className="text-[11px] font-bold text-slate-500">Valid customer checkouts</span>
+          <div className="text-base sm:text-2xl font-black text-slate-900 truncate">{totalOrdersCount}</div>
+          <span className="text-[9px] sm:text-[11px] font-bold text-slate-500 truncate block">Checkouts</span>
         </div>
 
         {/* Total Sales Revenue */}
-        <div className="bg-white border border-slate-200/90 p-5 rounded-3xl space-y-2 relative overflow-hidden shadow-xs hover:border-slate-300 transition-all">
-          <div className="flex justify-between items-center text-slate-500">
-            <span className="text-xs font-bold uppercase tracking-wider">Total Sales Revenue</span>
-            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center font-bold">
-              <FiDollarSign className="w-4 h-4 text-emerald-700" />
+        <div className="bg-white border border-slate-200/90 p-3 sm:p-5 rounded-2xl sm:rounded-3xl space-y-1 sm:space-y-2 relative overflow-hidden shadow-xs hover:border-slate-300 transition-all">
+          <div className="flex justify-between items-center text-slate-500 gap-1">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider truncate">Gross Sales</span>
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center font-bold shrink-0">
+              <FiDollarSign className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-700" />
             </div>
           </div>
-          <div className="text-2xl font-black text-slate-900">₹{totalSalesRevenue.toLocaleString('en-IN')}</div>
-          <span className="text-[11px] font-bold text-slate-500">Gross revenue generated</span>
+          <div className="text-base sm:text-2xl font-black text-slate-900 truncate">₹{totalSalesRevenue.toLocaleString('en-IN')}</div>
+          <span className="text-[9px] sm:text-[11px] font-bold text-slate-500 truncate block">Gross revenue</span>
         </div>
 
       </div>

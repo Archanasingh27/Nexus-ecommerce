@@ -94,7 +94,7 @@ export const OrdersPage = () => {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${activeTab === tab
-                  ? 'bg-linear-to-r from-orange-500 to-amber-500 text-white font-black shadow-xs'
+                  ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-black shadow-xs'
                   : 'text-slate-600 hover:text-orange-600 hover:bg-orange-50/60'
                 }`}
             >

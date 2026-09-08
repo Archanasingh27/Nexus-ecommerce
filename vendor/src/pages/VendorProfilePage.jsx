@@ -5,7 +5,6 @@ import {
   FiUser,
   FiShoppingBag,
   FiMapPin,
-  FiDollarSign,
   FiImage,
 } from 'react-icons/fi';
 import api from '../api/axios';
@@ -30,10 +29,6 @@ export const VendorProfilePage = () => {
     city: '',
     state: '',
     postalCode: '',
-    accountHolderName: '',
-    accountNumber: '',
-    bankName: '',
-    routingOrIfsc: '',
   });
 
   const [loading, setLoading] = useState(false);
@@ -54,10 +49,6 @@ export const VendorProfilePage = () => {
         city: vendor.address?.city || 'Indore',
         state: vendor.address?.state || 'Madhya Pradesh',
         postalCode: vendor.address?.postalCode || '',
-        accountHolderName: vendor.bankDetails?.accountHolderName || '',
-        accountNumber: vendor.bankDetails?.accountNumber || '',
-        bankName: vendor.bankDetails?.bankName || '',
-        routingOrIfsc: vendor.bankDetails?.routingOrIfsc || '',
       });
     }
   }, [vendor]);
@@ -83,12 +74,6 @@ export const VendorProfilePage = () => {
           postalCode: formData.postalCode,
           country: 'India',
         },
-        bankDetails: {
-          accountHolderName: formData.accountHolderName,
-          accountNumber: formData.accountNumber,
-          bankName: formData.bankName,
-          routingOrIfsc: formData.routingOrIfsc,
-        },
       });
 
       updateProfile(res.data.vendor);
@@ -109,7 +94,7 @@ export const VendorProfilePage = () => {
           <span>Merchant Store Settings</span>
         </h1>
         <p className="text-xs text-slate-500 font-medium mt-0.5">
-          Configure store identity, warehouse pickup address, and settlement bank credentials.
+          Configure store identity, storefront branding, and warehouse pickup location.
         </p>
       </div>
 
@@ -207,62 +192,12 @@ export const VendorProfilePage = () => {
           </div>
         </div>
 
-        {/* Bank & Settlement Details */}
-        <div className="glass-card p-6 sm:p-7 space-y-4">
-          <div className="flex items-center gap-2 font-extrabold text-sm text-slate-900 pb-2 border-b border-orange-100">
-            <FiDollarSign className="text-orange-500" />
-            <span>Bank Settlement Details</span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">Account Holder Name</label>
-              <input
-                type="text"
-                value={formData.accountHolderName}
-                onChange={(e) => setFormData({ ...formData, accountHolderName: e.target.value })}
-                className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-medium outline-none focus:bg-white focus:border-orange-500"
-              />
-            </div>
-
-            <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">Account Number</label>
-              <input
-                type="text"
-                value={formData.accountNumber}
-                onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })}
-                className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-mono outline-none focus:bg-white focus:border-orange-500"
-              />
-            </div>
-
-            <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">Bank Name</label>
-              <input
-                type="text"
-                value={formData.bankName}
-                onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
-                className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-medium outline-none focus:bg-white focus:border-orange-500"
-              />
-            </div>
-
-            <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">IFSC / Routing Code</label>
-              <input
-                type="text"
-                value={formData.routingOrIfsc}
-                onChange={(e) => setFormData({ ...formData, routingOrIfsc: e.target.value })}
-                className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-mono outline-none focus:bg-white focus:border-orange-500 uppercase"
-              />
-            </div>
-          </div>
-        </div>
-
         {/* Submit */}
         <div className="flex justify-end pt-2">
           <button
             type="submit"
             disabled={loading}
-            className="px-8 py-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black text-xs rounded-xl shadow-lg shadow-orange-500/25 flex items-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+            className="px-8 py-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black text-xs rounded-xl shadow-lg shadow-orange-500/25 flex items-center gap-2 transition-all cursor-pointer disabled:opacity-50 active:scale-95"
           >
             <FiSave className="w-4 h-4" />
             <span>{loading ? 'Saving...' : 'Save Store Profile'}</span>

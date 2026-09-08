@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { FiShoppingBag, FiLock, FiMail, FiUser, FiArrowRight, FiCheckCircle } from 'react-icons/fi';
@@ -10,10 +10,17 @@ export const AuthPage = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { login, register } = useAuth();
+  const { user, isAuthenticated, login, register } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const redirect = searchParams.get('redirect') || '/';
+
+  // Automatically redirect if already signed in
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(redirect.startsWith('/') ? redirect : `/${redirect}`, { replace: true });
+    }
+  }, [isAuthenticated, redirect, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

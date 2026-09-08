@@ -52,6 +52,10 @@ export const CheckoutPage = () => {
     coupon,
     applyCoupon,
     removeCoupon,
+    deliveryOption,
+    setDeliveryOption,
+    selectedDeliveryOptionObj,
+    deliveryOptions,
   } = useCart();
   const { user, isAuthenticated } = useAuth();
   const { addToast } = useToast();
@@ -200,6 +204,9 @@ export const CheckoutPage = () => {
         shippingPrice,
         discountPrice,
         totalPrice,
+        deliveryOption,
+        deliveryOptionName: selectedDeliveryOptionObj?.name || '4-Hour Express',
+        estimatedDeliveryTime: selectedDeliveryOptionObj?.time || 'Within 4 Hours',
       };
 
       // 1. Create order in database
@@ -332,6 +339,23 @@ export const CheckoutPage = () => {
             <span className="text-brand-600 font-mono">{createdOrder.trackingNumber}</span>
           </div>
           <div className="flex items-center justify-between pb-3 border-b border-slate-100 text-xs font-bold">
+            <span className="text-slate-500">Delivery Speed:</span>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-orange-100 text-orange-900 border border-orange-200 text-[11px] font-black">
+              {createdOrder.deliveryOptionName ||
+                (createdOrder.deliveryOption === 'instant'
+                  ? '⚡ Instant Delivery (30-45 mins)'
+                  : createdOrder.deliveryOption === 'nextday'
+                  ? '🚚 Next Day Delivery'
+                  : '🕒 4-Hour Express Delivery')}
+            </span>
+          </div>
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100 text-xs font-bold">
+            <span className="text-slate-500">Estimated Arrival:</span>
+            <span className="text-emerald-700 font-extrabold">
+              {createdOrder.estimatedDeliveryTime || (createdOrder.deliveryOption === 'instant' ? '30 - 45 Mins' : 'Within 4 Hours')}
+            </span>
+          </div>
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100 text-xs font-bold">
             <span className="text-slate-500">Delivery Address:</span>
             <span className="text-slate-900 text-right">
               {createdOrder.shippingAddress.street}, {createdOrder.shippingAddress.city}, {createdOrder.shippingAddress.postalCode}
@@ -461,7 +485,7 @@ export const CheckoutPage = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="text-xs font-bold text-slate-600 block mb-1">City (Locked)</label>
                   <input
@@ -497,6 +521,74 @@ export const CheckoutPage = () => {
                 </div>
               </div>
 
+              {/* Delivery Speed Options (Instant, 4-Hour, Next Day) */}
+              <div className="space-y-2.5 pt-2 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-black uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+                    <span>⚡ Choose Delivery Speed</span>
+                  </label>
+                  <span className="text-[11px] text-orange-600 font-bold">Fast Indore Dispatch</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {deliveryOptions.map((opt) => {
+                    const isSelected = deliveryOption === opt.id;
+                    const price =
+                      opt.freeAbove > 0 && itemsPrice >= opt.freeAbove
+                        ? opt.discountedPrice !== undefined
+                          ? opt.discountedPrice
+                          : 0
+                        : opt.price !== undefined
+                        ? opt.price
+                        : 0;
+                    const badgeClass =
+                      opt.badgeColor ||
+                      (opt.badge === 'Fastest Delivery'
+                        ? 'bg-amber-100 text-amber-900 border-amber-300'
+                        : opt.badge === 'Most Popular'
+                        ? 'bg-emerald-100 text-emerald-900 border-emerald-300'
+                        : 'bg-blue-100 text-blue-900 border-blue-300');
+
+                    return (
+                      <div
+                        key={opt.id}
+                        onClick={() => setDeliveryOption(opt.id)}
+                        className={`relative p-3.5 rounded-2xl border-2 cursor-pointer transition-all flex flex-col justify-between ${
+                          isSelected
+                            ? 'border-orange-500 bg-orange-50/40 shadow-sm ring-2 ring-orange-500/10'
+                            : 'border-slate-200 hover:border-slate-300 bg-white'
+                        }`}
+                      >
+                        {/* Top Badge */}
+                        <div className="flex items-center justify-between gap-1 mb-2">
+                          {opt.badge ? (
+                            <span className={`text-[10px] font-black px-2 py-0.5 rounded-md border ${badgeClass}`}>
+                              {opt.badge}
+                            </span>
+                          ) : (
+                            <span className="text-[10px] font-bold text-slate-400">Delivery Tier</span>
+                          )}
+                          <span className="text-base">{opt.icon || '🚚'}</span>
+                        </div>
+
+                        <div>
+                          <h4 className="text-xs font-black text-slate-900">{opt.name}</h4>
+                          <p className="text-[11px] font-bold text-orange-600 mt-0.5">{opt.time}</p>
+                          <p className="text-[10px] text-slate-500 mt-1 leading-snug">{opt.description}</p>
+                        </div>
+
+                        <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+                          <span className="text-slate-400 font-medium text-[10px]">Delivery Fee:</span>
+                          <span className="font-black text-slate-900">
+                            {price === 0 ? <span className="text-emerald-600 font-black">FREE</span> : `₹${price}`}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
               {/* Hyperlocal Indore Notice */}
               <div className="p-3 bg-[#e5f3f3]/70 rounded-xl border border-teal-200 text-[11px] font-bold text-teal-900 flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
@@ -506,7 +598,7 @@ export const CheckoutPage = () => {
               <div className="pt-4">
                 <button
                   type="submit"
-                  className="w-full py-4 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs rounded-2xl shadow-lg shadow-brand-500/20 flex items-center justify-center gap-2 transition-all"
+                  className="w-full py-4 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs rounded-2xl shadow-lg shadow-brand-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
                 >
                   <span>Continue to Payment Method</span>
                   <FiArrowRight className="w-4 h-4" />
@@ -746,8 +838,13 @@ export const CheckoutPage = () => {
               </div>
             )}
             <div className="flex justify-between text-slate-500">
-              <span>Shipping</span>
-              <span className="font-bold text-slate-900">{shippingPrice === 0 ? 'FREE' : formatPrice(shippingPrice)}</span>
+              <span className="flex items-center gap-1">
+                <span>Shipping:</span>
+                <span className="text-slate-800 font-bold">
+                  {selectedDeliveryOptionObj ? `${selectedDeliveryOptionObj.icon} ${selectedDeliveryOptionObj.name}` : 'Standard'}
+                </span>
+              </span>
+              <span className="font-bold text-slate-900">{shippingPrice === 0 ? <span className="text-emerald-600 font-black">FREE</span> : formatPrice(shippingPrice)}</span>
             </div>
             <div className="flex justify-between text-slate-500">
               <span>Tax</span>

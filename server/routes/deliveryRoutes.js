@@ -2,6 +2,7 @@ import express from 'express';
 import {
   deliveryLogin,
   getDeliveryProfile,
+  getDeliveryPublicConfig,
   toggleAvailability,
   getAvailableOrders,
   getMyActiveDeliveries,
@@ -18,8 +19,9 @@ import { protect, adminOnly, deliveryOnly } from '../middleware/authMiddleware.j
 
 const router = express.Router();
 
-// Public Rider Login
+// Public Rider Login & Config
 router.post('/login', deliveryLogin);
+router.get('/config', getDeliveryPublicConfig);
 
 // Protected Rider Operations
 router.get('/profile', protect, deliveryOnly, getDeliveryProfile);

@@ -9,11 +9,16 @@ import {
   FiRefreshCw,
   FiEye,
   FiTruck,
+  FiChevronLeft,
+  FiChevronRight,
+  FiX,
 } from 'react-icons/fi';
 import api from '../api/axios';
 import { VendorOrderDetailModal } from '../components/VendorOrderDetailModal';
 import { useToast } from '../context/ToastContext';
 import { useVendorAuth } from '../context/VendorAuthContext';
+
+const ITEMS_PER_PAGE = 10;
 
 export const VendorOrdersPage = () => {
   const { addToast } = useToast();
@@ -22,6 +27,7 @@ export const VendorOrdersPage = () => {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [search, setSearch] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -39,13 +45,14 @@ export const VendorOrdersPage = () => {
 
   useEffect(() => {
     fetchOrders();
+    setCurrentPage(1);
   }, [statusFilter]);
 
   // Real-Time Socket.IO Refresh when delivery boy updates order milestones
   useEffect(() => {
     if (!socket || !vendor?._id) return;
 
-    const handleOrderMilestone = (data) => {
+    const handleOrderMilestone = () => {
       fetchOrders();
     };
 
@@ -65,13 +72,35 @@ export const VendorOrdersPage = () => {
     const query = search.toLowerCase();
     const orderNum = (order.orderNumber || '').toLowerCase();
     const customer = (order.shippingAddress?.fullName || order.user?.name || '').toLowerCase();
-    return orderNum.includes(query) || customer.includes(query);
+    const city = (order.shippingAddress?.city || '').toLowerCase();
+    const items = (order.orderItems || []).map((i) => (i.name || '').toLowerCase()).join(' ');
+    return orderNum.includes(query) || customer.includes(query) || city.includes(query) || items.includes(query);
   });
+
+  // Reset pagination on search
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search]);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredOrders.length / ITEMS_PER_PAGE) || 1;
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedOrders = filteredOrders.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   const handleInspect = (order) => {
     setSelectedOrder(order);
     setIsModalOpen(true);
   };
+
+  const tabs = [
+    { id: 'ALL', label: 'All Orders' },
+    { id: 'Pending', label: '⏳ Pending' },
+    { id: 'Confirmed', label: '✅ Confirmed' },
+    { id: 'Packed', label: '📦 Packed' },
+    { id: 'Ready for Pickup', label: '🚀 Ready for Pickup' },
+    { id: 'Out for Delivery', label: '🚚 Out for Delivery' },
+    { id: 'Delivered', label: '🎉 Delivered' },
+  ];
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
@@ -96,50 +125,51 @@ export const VendorOrdersPage = () => {
         </button>
       </div>
 
-      {/* Filter Tabs & Search Bar */}
-      <div className="glass-card p-4 space-y-3">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-          {/* Search */}
-          <div className="relative w-full sm:max-w-md">
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by order # or customer name..."
-              className="w-full bg-slate-50 border border-slate-200 focus:bg-white focus:border-orange-500 text-xs rounded-xl py-2 pl-9 pr-4 text-slate-900 outline-none font-bold transition-all"
-            />
-            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5" />
-          </div>
+      {/* Filter & Search Section (Search at top, Status Tabs below) */}
+      <div className="glass-card p-4 space-y-3.5 border border-orange-200/80 shadow-md">
+        {/* 1. Search Bar at Top */}
+        <div className="relative w-full">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by order #, customer name, city, or product name..."
+            className="w-full bg-slate-50 border border-slate-200 focus:bg-white focus:border-orange-500 text-xs rounded-2xl py-3 pl-10 pr-10 text-slate-900 outline-none font-bold transition-all shadow-2xs placeholder:text-slate-400 placeholder:font-normal"
+          />
+          <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+          {search && (
+            <button
+              onClick={() => setSearch('')}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1 cursor-pointer"
+            >
+              <FiX className="w-4 h-4" />
+            </button>
+          )}
+        </div>
 
-          {/* Status Tabs */}
-          <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
-            {[
-              { id: 'ALL', label: 'All Orders' },
-              { id: 'Pending', label: '⏳ Pending' },
-              { id: 'Confirmed', label: '✅ Confirmed' },
-              { id: 'Packed', label: '📦 Packed' },
-              { id: 'Ready for Pickup', label: '🚀 Ready for Pickup' },
-              { id: 'Out for Delivery', label: '🚚 Out for Delivery' },
-              { id: 'Delivered', label: '🎉 Delivered' },
-            ].map((tab) => (
+        {/* 2. Status Filter Tabs (Under Search) */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-0.5 no-scrollbar">
+          {tabs.map((tab) => {
+            const isActive = statusFilter === tab.id;
+            return (
               <button
                 key={tab.id}
                 onClick={() => setStatusFilter(tab.id)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
-                  statusFilter === tab.id
-                    ? 'bg-orange-500 text-white shadow-xs'
-                    : 'bg-slate-100 text-slate-600 hover:bg-orange-50 hover:text-orange-600'
+                className={`px-3.5 py-2 rounded-xl text-xs font-black transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
+                  isActive
+                    ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-md shadow-orange-500/20 scale-[1.02]'
+                    : 'bg-slate-100 hover:bg-orange-50 text-slate-700 hover:text-orange-600 border border-slate-200/60'
                 }`}
               >
-                {tab.label}
+                <span>{tab.label}</span>
               </button>
-            ))}
-          </div>
+            );
+          })}
         </div>
       </div>
 
-      {/* Orders Table */}
-      <div className="glass-card overflow-hidden">
+      {/* Orders Table Container */}
+      <div className="glass-card overflow-hidden border border-orange-100 shadow-xl rounded-3xl">
         {loading && orders.length === 0 ? (
           <div className="py-20 text-center text-slate-400 text-xs font-bold">
             <div className="w-8 h-8 border-3 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
@@ -152,121 +182,173 @@ export const VendorOrdersPage = () => {
             </div>
             <h3 className="text-base font-extrabold text-slate-800">No Orders in Queue</h3>
             <p className="text-xs text-slate-500 max-w-sm mx-auto">
-              Orders matching this filter status will appear here as customers place purchases.
+              {search ? 'No orders match your search query.' : 'Orders matching this filter status will appear here as customers place purchases.'}
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-orange-100 bg-orange-50/40 text-[10px] font-black uppercase tracking-wider text-slate-500">
-                  <th className="py-3.5 px-4">Order # & Date</th>
-                  <th className="py-3.5 px-4">Customer & City</th>
-                  <th className="py-3.5 px-4">Your Items</th>
-                  <th className="py-3.5 px-4">Subtotal</th>
-                  <th className="py-3.5 px-4">Stage Status</th>
-                  <th className="py-3.5 px-4">Delivery Partner</th>
-                  <th className="py-3.5 px-4 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-orange-50/60 font-medium">
-                {filteredOrders.map((ord) => {
-                  const status = ord.vendorSubStatus || ord.status;
-                  return (
-                    <tr key={ord._id} className="hover:bg-orange-50/30 transition-colors">
-                      <td className="py-3.5 px-4">
-                        <div className="font-mono font-extrabold text-slate-900 text-sm">
-                          #{ord.orderNumber}
-                        </div>
-                        <div className="text-[10px] text-slate-400">
-                          {new Date(ord.createdAt).toLocaleDateString([], {
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
-                        </div>
-                      </td>
-
-                      <td className="py-3.5 px-4">
-                        <div className="font-extrabold text-slate-800">
-                          {ord.shippingAddress?.fullName || ord.user?.name || 'Customer'}
-                        </div>
-                        <div className="text-[11px] text-slate-500 font-medium">
-                          📍 {ord.shippingAddress?.city} ({ord.shippingAddress?.postalCode})
-                        </div>
-                      </td>
-
-                      <td className="py-3.5 px-4">
-                        <div className="space-y-1 max-w-xs">
-                          {ord.orderItems?.map((it, idx) => (
-                            <div key={idx} className="text-[11px] text-slate-700 truncate">
-                              &bull; {it.name} <span className="text-slate-400 font-bold">(&times;{it.quantity})</span>
-                            </div>
-                          ))}
-                        </div>
-                      </td>
-
-                      <td className="py-3.5 px-4">
-                        <div className="font-black text-slate-900 font-mono text-sm">
-                          ₹{ord.vendorItemsTotal?.toLocaleString('en-IN') || ord.totalPrice?.toLocaleString('en-IN')}
-                        </div>
-                        <span className="text-[10px] text-slate-400 font-medium">
-                          {ord.isPaid ? '💳 Prepaid' : '💵 COD'}
-                        </span>
-                      </td>
-
-                      <td className="py-3.5 px-4">
-                        <span
-                          className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider inline-flex items-center gap-1 border ${
-                            status === 'Ready for Pickup'
-                              ? 'bg-blue-100 text-blue-800 border-blue-300'
-                              : status === 'Picked Up'
-                              ? 'bg-purple-100 text-purple-800 border-purple-300'
-                              : status === 'Out for Delivery'
-                              ? 'bg-sky-100 text-sky-800 border-sky-300'
-                              : status === 'Packed'
-                              ? 'bg-amber-100 text-amber-800 border-amber-300'
-                              : status === 'Confirmed'
-                              ? 'bg-orange-100 text-orange-800 border-orange-300'
-                              : status === 'Delivered'
-                              ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
-                              : 'bg-slate-100 text-slate-700 border-slate-300'
-                          }`}
-                        >
-                          {status}
-                        </span>
-                      </td>
-
-                      <td className="py-3.5 px-4">
-                        {ord.deliveryPartner ? (
-                          <div>
-                            <div className="font-bold text-slate-800 text-xs flex items-center gap-1">
-                              <FiTruck className="text-orange-500" />
-                              <span>{ord.deliveryPartner.name}</span>
-                            </div>
-                            <div className="text-[10px] text-slate-500">{ord.deliveryPartner.phone}</div>
+          <>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-orange-100 bg-orange-50/60 text-[10px] font-black uppercase tracking-wider text-slate-500">
+                    <th className="py-3.5 px-4">Order # & Date</th>
+                    <th className="py-3.5 px-4">Customer & Destination</th>
+                    <th className="py-3.5 px-4">Your Items</th>
+                    <th className="py-3.5 px-4">Subtotal</th>
+                    <th className="py-3.5 px-4">Stage Status</th>
+                    <th className="py-3.5 px-4">Delivery Partner</th>
+                    <th className="py-3.5 px-4 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-orange-50/60 font-medium">
+                  {paginatedOrders.map((ord) => {
+                    const status = ord.vendorSubStatus || ord.status;
+                    return (
+                      <tr key={ord._id} className="hover:bg-orange-50/30 transition-colors">
+                        <td className="py-3.5 px-4">
+                          <div className="font-mono font-extrabold text-slate-900 text-sm">
+                            #{ord.orderNumber}
                           </div>
-                        ) : (
-                          <span className="text-[11px] text-slate-400 italic">Unassigned</span>
-                        )}
-                      </td>
+                          <div className="text-[10px] text-slate-400">
+                            {new Date(ord.createdAt).toLocaleDateString([], {
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </div>
+                        </td>
 
-                      <td className="py-3.5 px-4 text-right">
-                        <button
-                          onClick={() => handleInspect(ord)}
-                          className="px-3 py-1.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-extrabold rounded-xl text-xs shadow-xs flex items-center gap-1 ml-auto cursor-pointer"
-                        >
-                          <FiEye className="w-3.5 h-3.5" />
-                          <span>Fulfill</span>
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                        <td className="py-3.5 px-4">
+                          <div className="font-extrabold text-slate-900 text-xs">
+                            {ord.shippingAddress?.fullName || ord.user?.name || 'Customer'}
+                          </div>
+                          <div
+                            className="text-[11px] text-slate-500 font-medium truncate max-w-[220px]"
+                            title={`${ord.shippingAddress?.street ? ord.shippingAddress.street + ', ' : ''}${ord.shippingAddress?.city || 'Indore'} - ${ord.shippingAddress?.postalCode || ''}`}
+                          >
+                            📍 {ord.shippingAddress?.street ? `${ord.shippingAddress.street}, ` : ''}{ord.shippingAddress?.city || 'Indore'} ({ord.shippingAddress?.postalCode || '452xxx'})
+                          </div>
+                        </td>
+
+                        <td className="py-3.5 px-4">
+                          <div className="space-y-1 max-w-xs">
+                            {ord.orderItems?.map((it, idx) => (
+                              <div key={idx} className="text-[11px] text-slate-700 truncate">
+                                &bull; {it.name} <span className="text-slate-400 font-bold">(&times;{it.quantity})</span>
+                              </div>
+                            ))}
+                          </div>
+                        </td>
+
+                        <td className="py-3.5 px-4">
+                          <div className="font-black text-slate-900 font-mono text-sm">
+                            ₹{ord.vendorItemsTotal?.toLocaleString('en-IN') || ord.totalPrice?.toLocaleString('en-IN')}
+                          </div>
+                          <span className="text-[10px] text-slate-400 font-medium">
+                            {ord.isPaid ? '💳 Prepaid' : '💵 COD'}
+                          </span>
+                        </td>
+
+                        <td className="py-3.5 px-4">
+                          <span
+                            className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider inline-flex items-center gap-1 border ${
+                              status === 'Ready for Pickup'
+                                ? 'bg-blue-100 text-blue-800 border-blue-300'
+                                : status === 'Picked Up'
+                                ? 'bg-purple-100 text-purple-800 border-purple-300'
+                                : status === 'Out for Delivery'
+                                ? 'bg-sky-100 text-sky-800 border-sky-300'
+                                : status === 'Packed'
+                                ? 'bg-amber-100 text-amber-800 border-amber-300'
+                                : status === 'Confirmed'
+                                ? 'bg-orange-100 text-orange-800 border-orange-300'
+                                : status === 'Delivered'
+                                ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                                : 'bg-slate-100 text-slate-700 border-slate-300'
+                            }`}
+                          >
+                            {status}
+                          </span>
+                        </td>
+
+                        <td className="py-3.5 px-4">
+                          {ord.deliveryPartner ? (
+                            <div>
+                              <div className="font-bold text-slate-800 text-xs flex items-center gap-1">
+                                <FiTruck className="text-orange-500" />
+                                <span>{ord.deliveryPartner.name}</span>
+                              </div>
+                              <div className="text-[10px] text-slate-500">{ord.deliveryPartner.phone}</div>
+                            </div>
+                          ) : (
+                            <span className="text-[11px] text-slate-400 italic">Unassigned</span>
+                          )}
+                        </td>
+
+                        <td className="py-3.5 px-4 text-right">
+                          <button
+                            onClick={() => handleInspect(ord)}
+                            className="px-3 py-1.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-extrabold rounded-xl text-xs shadow-xs flex items-center gap-1 ml-auto cursor-pointer"
+                          >
+                            <FiEye className="w-3.5 h-3.5" />
+                            <span>Fulfill</span>
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination Controls */}
+            {filteredOrders.length > 0 && (
+              <div className="p-4 bg-white border-t border-orange-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                <div className="text-slate-500 font-medium">
+                  Showing <strong className="text-slate-900">{startIndex + 1}</strong> to{' '}
+                  <strong className="text-slate-900">{Math.min(startIndex + ITEMS_PER_PAGE, filteredOrders.length)}</strong> of{' '}
+                  <strong className="text-slate-900">{filteredOrders.length}</strong> orders
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 transition-all cursor-pointer shadow-2xs"
+                    title="Previous Page"
+                  >
+                    <FiChevronLeft className="w-4 h-4" />
+                  </button>
+
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                      <button
+                        key={pageNum}
+                        onClick={() => setCurrentPage(pageNum)}
+                        className={`w-8 h-8 rounded-xl font-black text-xs transition-all cursor-pointer ${
+                          currentPage === pageNum
+                            ? 'bg-orange-500 text-white shadow-xs'
+                            : 'bg-slate-100 hover:bg-orange-50 text-slate-700 hover:text-orange-600'
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    className="p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 transition-all cursor-pointer shadow-2xs"
+                    title="Next Page"
+                  >
+                    <FiChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 

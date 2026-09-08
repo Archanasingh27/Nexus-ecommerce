@@ -70,6 +70,16 @@ export const getProducts = async (req, res) => {
     if (req.query.isNewArrival === 'true') query.isNewArrival = true;
     if (req.query.isFlashDeal === 'true') query.isFlashDeal = true;
 
+    // Approval Status Filter
+    if (req.query.approvalStatus) {
+      if (req.query.approvalStatus !== 'all') {
+        query.approvalStatus = req.query.approvalStatus;
+      }
+    } else {
+      // By default for customer storefront, only show approved products
+      query.approvalStatus = 'approved';
+    }
+
     // Vendor / Seller Filter
     if (req.query.vendor) {
       if (req.query.vendor === 'direct' || req.query.vendor === 'nexus') {
@@ -112,7 +122,7 @@ export const getProducts = async (req, res) => {
 // @access  Public
 export const getFeaturedProducts = async (req, res) => {
   try {
-    const products = await Product.find({ isFeatured: true })
+    const products = await Product.find({ isFeatured: true, approvalStatus: 'approved' })
       .populate('category', 'name slug')
       .populate('vendor', 'name storeName storeLogo vendorStatus')
       .limit(8);
@@ -127,13 +137,13 @@ export const getFeaturedProducts = async (req, res) => {
 // @access  Public
 export const getDealsAndTrending = async (req, res) => {
   try {
-    const flashDeals = await Product.find({ isFlashDeal: true })
+    const flashDeals = await Product.find({ isFlashDeal: true, approvalStatus: 'approved' })
       .populate('vendor', 'name storeName storeLogo vendorStatus')
       .limit(6);
-    const trending = await Product.find({ isTrending: true })
+    const trending = await Product.find({ isTrending: true, approvalStatus: 'approved' })
       .populate('vendor', 'name storeName storeLogo vendorStatus')
       .limit(8);
-    const newArrivals = await Product.find({ isNewArrival: true })
+    const newArrivals = await Product.find({ isNewArrival: true, approvalStatus: 'approved' })
       .populate('vendor', 'name storeName storeLogo vendorStatus')
       .sort({ createdAt: -1 })
       .limit(8);
@@ -145,8 +155,14 @@ export const getDealsAndTrending = async (req, res) => {
         value: {
           title: 'Flash Sales & Hot Deals',
           tag: 'Limited-Time Deals',
+          announcementBadge: 'FLASH SALE',
+          announcementText: 'Use code NEXUS20 for 20% OFF on all orders over ₹999!',
+          couponCode: 'NEXUS20',
+          discountPercent: 20,
+          minOrderAmount: 999,
           endTime: defaultEndTime.toISOString(),
           isActive: true,
+          showAnnouncementBar: true,
         },
       };
     }
@@ -186,6 +202,7 @@ export const getProductById = async (req, res) => {
       const relatedProducts = await Product.find({
         category: product.category,
         _id: { $ne: product._id },
+        approvalStatus: 'approved',
       })
         .populate('vendor', 'name storeName storeLogo vendorStatus')
         .limit(4);

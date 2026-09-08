@@ -64,10 +64,10 @@ export const VendorsPage = () => {
   };
 
   const handleDelete = async (vendorId, storeName) => {
-    if (window.confirm(`WARNING: Deleting vendor "${storeName}" will remove their account and all listed products. Proceed?`)) {
+    if (window.confirm(`Are you sure you want to delete vendor "${storeName}"? This will remove their account and all listed products.`)) {
       try {
         await api.delete(`/admin/vendors/${vendorId}`);
-        addToast(`Vendor "${storeName}" and products deleted.`, 'success');
+        addToast(`Vendor "${storeName}" deleted successfully.`, 'success');
         fetchVendors();
       } catch (err) {
         addToast('Failed to delete vendor', 'error');

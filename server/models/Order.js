@@ -68,6 +68,30 @@ const orderSchema = new mongoose.Schema(
       unique: true,
       required: true,
     },
+    groupOrderNumber: {
+      type: String,
+      default: '',
+    },
+    vendor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null,
+    },
+    vendorName: {
+      type: String,
+      default: '',
+    },
+    vendorStoreName: {
+      type: String,
+      default: '',
+    },
+    vendorAddress: {
+      street: { type: String, default: '' },
+      city: { type: String, default: '' },
+      state: { type: String, default: '' },
+      postalCode: { type: String, default: '' },
+      phone: { type: String, default: '' },
+    },
     orderItems: [orderItemSchema],
     vendors: [vendorSubOrderSchema],
     shippingAddress: {
@@ -168,6 +192,19 @@ const orderSchema = new mongoose.Schema(
     deliveryFee: {
       type: Number,
       default: 40,
+    },
+    deliveryOption: {
+      type: String,
+      enum: ['instant', '4hour', 'nextday'],
+      default: '4hour',
+    },
+    deliveryOptionName: {
+      type: String,
+      default: '4-Hour Delivery',
+    },
+    estimatedDeliveryTime: {
+      type: String,
+      default: 'Within 4 Hours',
     },
     deliveryNotes: {
       type: String,

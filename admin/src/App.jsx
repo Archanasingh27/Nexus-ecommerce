@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ToastProvider } from './context/ToastContext';
 import { AdminAuthProvider, useAdminAuth } from './context/AdminAuthContext';
 
@@ -11,19 +11,31 @@ import { AnalyticsPage } from './pages/AnalyticsPage';
 import { OrderAnalyticsPage } from './pages/OrderAnalyticsPage';
 import { ProductAnalyticsPage } from './pages/ProductAnalyticsPage';
 import { ProductsPage } from './pages/ProductsPage';
+import { AdminProductEditorPage } from './pages/AdminProductEditorPage';
 import { CategoriesPage } from './pages/CategoriesPage';
+import { AdminCategoryEditorPage } from './pages/AdminCategoryEditorPage';
 import { CouponsPage } from './pages/CouponsPage';
 import { AdvertisementsPage } from './pages/AdvertisementsPage';
 import { OrdersPage } from './pages/OrdersPage';
 import { DeliveryBoysPage } from './pages/DeliveryBoysPage';
+import { DeliverySettingsPage } from './pages/DeliverySettingsPage';
 import { UsersPage } from './pages/UsersPage';
 import { VendorsPage } from './pages/VendorsPage';
 import { AdminProfilePage } from './pages/AdminProfilePage';
+import { AdminMessagesPage } from './pages/AdminMessagesPage';
 import { AdminLoginPage } from './pages/AdminLoginPage';
 
 const ProtectedAdminLayout = ({ children }) => {
   const { isAuthenticated, loading } = useAdminAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const location = useLocation();
+  const mainRef = useRef(null);
+
+  useEffect(() => {
+    if (mainRef.current) {
+      mainRef.current.scrollTop = 0;
+    }
+  }, [location.pathname]);
 
   if (loading) {
     return (
@@ -38,7 +50,7 @@ const ProtectedAdminLayout = ({ children }) => {
   }
 
   return (
-    <div className="h-screen w-screen bg-linear-to-br from-white via-orange-50/30 to-amber-50/20 text-slate-900 flex flex-col overflow-hidden relative">
+    <div className="h-screen w-screen bg-gradient-to-br from-white via-orange-50/30 to-amber-50/20 text-slate-900 flex flex-col overflow-hidden relative">
       {/* Subtle orange/yellow background ambient light orbs */}
       <div className="absolute top-0 right-1/4 w-96 h-96 bg-orange-200/20 rounded-full blur-3xl pointer-events-none -z-10" />
       <div className="absolute bottom-10 left-10 w-80 h-80 bg-amber-200/20 rounded-full blur-3xl pointer-events-none -z-10" />
@@ -46,7 +58,7 @@ const ProtectedAdminLayout = ({ children }) => {
       <AdminNavbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
       <div className="flex-1 flex overflow-hidden relative z-10">
         <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        <main className="flex-1 overflow-y-auto max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8">
+        <main ref={mainRef} className="flex-1 overflow-y-auto max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8">
           {children}
         </main>
       </div>
@@ -103,10 +115,42 @@ export function App() {
               }
             />
             <Route
+              path="/products/new"
+              element={
+                <ProtectedAdminLayout>
+                  <AdminProductEditorPage />
+                </ProtectedAdminLayout>
+              }
+            />
+            <Route
+              path="/products/edit/:id"
+              element={
+                <ProtectedAdminLayout>
+                  <AdminProductEditorPage />
+                </ProtectedAdminLayout>
+              }
+            />
+            <Route
               path="/categories"
               element={
                 <ProtectedAdminLayout>
                   <CategoriesPage />
+                </ProtectedAdminLayout>
+              }
+            />
+            <Route
+              path="/categories/new"
+              element={
+                <ProtectedAdminLayout>
+                  <AdminCategoryEditorPage />
+                </ProtectedAdminLayout>
+              }
+            />
+            <Route
+              path="/categories/edit/:id"
+              element={
+                <ProtectedAdminLayout>
+                  <AdminCategoryEditorPage />
                 </ProtectedAdminLayout>
               }
             />
@@ -143,6 +187,14 @@ export function App() {
               }
             />
             <Route
+              path="/delivery-settings"
+              element={
+                <ProtectedAdminLayout>
+                  <DeliverySettingsPage />
+                </ProtectedAdminLayout>
+              }
+            />
+            <Route
               path="/users"
               element={
                 <ProtectedAdminLayout>
@@ -163,6 +215,14 @@ export function App() {
               element={
                 <ProtectedAdminLayout>
                   <AdminProfilePage />
+                </ProtectedAdminLayout>
+              }
+            />
+            <Route
+              path="/messages"
+              element={
+                <ProtectedAdminLayout>
+                  <AdminMessagesPage />
                 </ProtectedAdminLayout>
               }
             />

@@ -141,7 +141,7 @@ export const LiveRouteMap = ({
     // Add Markers
     const storeMarker = L.marker(storeLocation, { icon: storeIcon })
       .addTo(map)
-      .bindPopup(`<b>Pickup Store:</b> ${order?.vendors?.[0]?.storeName || 'Vendor Warehouse'}`);
+      .bindPopup(`<b>Pickup Store:</b> ${order?.vendorStoreName || order?.vendors?.[0]?.storeName || 'Vendor Warehouse'}`);
 
     const customerMarker = L.marker(customerLocation, { icon: customerIcon })
       .addTo(map)

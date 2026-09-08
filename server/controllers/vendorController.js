@@ -57,7 +57,7 @@ export const vendorRegister = async (req, res) => {
       password,
       phone: phone || '',
       role: 'vendor',
-      vendorStatus: 'approved', // Auto-approved for frictionless demo & testing
+      vendorStatus: 'pending', // Requires Admin approval
       storeName: storeName.trim(),
       storeDescription: storeDescription || '',
       storeLogo: storeLogo || 'https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?w=200&auto=format&fit=crop&q=80',
@@ -82,10 +82,25 @@ export const vendorRegister = async (req, res) => {
       vendorEarnings: { pending: 0, withdrawn: 0, total: 0 },
     });
 
+    // Notify Admin in Real-Time
+    if (global.io) {
+      global.io.to('admin_room').emit('new_vendor_registered', {
+        vendor: {
+          _id: vendor._id,
+          name: vendor.name,
+          email: vendor.email,
+          storeName: vendor.storeName,
+          phone: vendor.phone,
+          vendorStatus: 'pending',
+          createdAt: vendor.createdAt,
+        },
+      });
+    }
+
     res.status(201).json({
       success: true,
-      message: 'Vendor merchant account registered successfully!',
-      token: generateToken(vendor._id),
+      isPendingApproval: true,
+      message: 'Merchant registration submitted! Your account is pending Admin approval. You can log in once approved.',
       vendor: {
         _id: vendor._id,
         name: vendor.name,
@@ -94,13 +109,7 @@ export const vendorRegister = async (req, res) => {
         vendorStatus: vendor.vendorStatus,
         storeName: vendor.storeName,
         storeDescription: vendor.storeDescription,
-        storeLogo: vendor.storeLogo,
-        storeBanner: vendor.storeBanner,
         phone: vendor.phone,
-        address: vendor.address,
-        commissionRate: vendor.commissionRate,
-        vendorEarnings: vendor.vendorEarnings,
-        bankDetails: vendor.bankDetails,
       },
     });
   } catch (error) {
@@ -128,6 +137,22 @@ export const vendorLogin = async (req, res) => {
 
     if (user.role !== 'vendor' && user.role !== 'admin') {
       return res.status(403).json({ success: false, message: 'Access denied: Account is not a registered vendor' });
+    }
+
+    // Check Vendor Approval Status (Admins bypass)
+    if (user.role === 'vendor' && user.vendorStatus === 'pending') {
+      return res.status(403).json({
+        success: false,
+        isPendingApproval: true,
+        message: 'Your merchant registration is currently pending Admin approval. You will receive access once approved by Admin.',
+      });
+    }
+
+    if (user.role === 'vendor' && user.vendorStatus === 'rejected') {
+      return res.status(403).json({
+        success: false,
+        message: 'Your vendor account application was rejected or suspended. Please contact Admin support.',
+      });
     }
 
     const isMatch = await user.matchPassword(password);
@@ -562,7 +587,7 @@ export const createVendorProduct = async (req, res) => {
       vendor: vendor._id,
       vendorName: vendor.name,
       vendorStoreName: vendor.storeName || vendor.name,
-      approvalStatus: 'approved',
+      approvalStatus: 'pending',
       countInStock: countInStock !== undefined ? Number(countInStock) : 10,
       description,
       images: images && images.length > 0 ? images : ['https://images.unsplash.com/photo-1581783342308-f792dbdd27c5?w=800'],
@@ -576,12 +601,12 @@ export const createVendorProduct = async (req, res) => {
 
     await Category.findByIdAndUpdate(categoryObj._id, { $inc: { itemCount: 1 } });
 
-    // Notify Admin in Real Time that a Vendor listed a new product
+    // Notify Admin in Real Time that a Vendor submitted a new product for approval
     if (global.io) {
       global.io.emit('admin_notification', {
         id: Date.now() + Math.random(),
-        title: 'New Vendor Product Listed',
-        message: `Vendor "${vendor.storeName || vendor.name}" added a new product "${product.name}" (₹${product.price.toLocaleString('en-IN')}).`,
+        title: 'New Product Submitted for Approval',
+        message: `Vendor "${vendor.storeName || vendor.name}" submitted "${product.name}" (₹${product.price.toLocaleString('en-IN')}) for approval.`,
         time: 'Just now',
         timestamp: new Date().toISOString(),
         unread: true,
@@ -594,7 +619,7 @@ export const createVendorProduct = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: 'Product listed successfully in your store catalog!',
+      message: 'Product submitted successfully! It is currently under review by Admin.',
       product,
     });
   } catch (error) {
@@ -697,7 +722,7 @@ export const getVendorOrders = async (req, res) => {
       .sort({ createdAt: -1 })
       .lean();
 
-    // Filter to present vendor-specific items and sub-statuses
+    // Filter to present vendor-specific items and mask customer personal details for buyer privacy
     const tailoredOrders = orders.map((order) => {
       const myItems = order.orderItems.filter(
         (item) => item.vendor && item.vendor.toString() === vendorId.toString()
@@ -708,11 +733,31 @@ export const getVendorOrders = async (req, res) => {
       );
 
       const subStatus = vendorSub?.status || order.status;
-
       const myItemsTotal = myItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+      // Provide Name and Address for package labeling, but keep Phone Number strictly masked to prevent vendor calling
+      const safeUser = {
+        name: order.user?.name || order.shippingAddress?.fullName || 'Customer',
+        email: order.user?.email || '',
+        phone: '🔒 Phone Protected',
+        avatar: order.user?.avatar || '',
+      };
+
+      const safeShippingAddress = {
+        fullName: order.shippingAddress?.fullName || order.user?.name || 'Customer',
+        phone: '🔒 Phone Protected',
+        street: order.shippingAddress?.street || order.shippingAddress?.address || '',
+        address: order.shippingAddress?.address || order.shippingAddress?.street || '',
+        city: order.shippingAddress?.city || 'Indore',
+        state: order.shippingAddress?.state || 'Madhya Pradesh',
+        postalCode: order.shippingAddress?.postalCode || '452001',
+        country: order.shippingAddress?.country || 'India',
+      };
 
       return {
         ...order,
+        user: safeUser,
+        shippingAddress: safeShippingAddress,
         orderItems: myItems,
         vendorSubStatus: subStatus,
         vendorItemsTotal: myItemsTotal,
@@ -762,10 +807,31 @@ export const getVendorOrderById = async (req, res) => {
       (v) => v.vendor && v.vendor.toString() === vendorId.toString()
     );
 
+    // Provide Name and Address for package labeling, but keep Phone Number strictly masked to prevent vendor calling
+    const safeUser = {
+      name: order.user?.name || order.shippingAddress?.fullName || 'Customer',
+      email: order.user?.email || '',
+      phone: '🔒 Phone Protected',
+      avatar: order.user?.avatar || '',
+    };
+
+    const safeShippingAddress = {
+      fullName: order.shippingAddress?.fullName || order.user?.name || 'Customer',
+      phone: '🔒 Phone Protected',
+      street: order.shippingAddress?.street || order.shippingAddress?.address || '',
+      address: order.shippingAddress?.address || order.shippingAddress?.street || '',
+      city: order.shippingAddress?.city || 'Indore',
+      state: order.shippingAddress?.state || 'Madhya Pradesh',
+      postalCode: order.shippingAddress?.postalCode || '452001',
+      country: order.shippingAddress?.country || 'India',
+    };
+
     res.json({
       success: true,
       order: {
         ...order,
+        user: safeUser,
+        shippingAddress: safeShippingAddress,
         orderItems: myItems,
         vendorSubStatus: vendorSub?.status || order.status,
         vendorSubDetails: vendorSub,
@@ -899,13 +965,20 @@ export const updateVendorOrderStatus = async (req, res) => {
             paymentMethod: order.paymentMethod,
             isPaid: order.isPaid,
             deliveryFee: order.deliveryFee || 40,
-            vendorsCount: totalVendors,
-            vendors: order.vendors.map((v) => ({
-              _id: v.vendor,
-              storeName: v.storeName,
-              phone: v.vendorPhone,
-              address: v.vendorAddress,
-            })),
+            vendorsCount: 1,
+            vendors: (order.vendors && order.vendors.length > 0)
+              ? order.vendors.map((v) => ({
+                  _id: v.vendor,
+                  storeName: v.storeName || order.vendorStoreName || req.user.storeName || 'Merchant Store',
+                  phone: v.vendorPhone || order.vendorAddress?.phone || req.user.phone || '',
+                  address: v.vendorAddress || order.vendorAddress || req.user.address,
+                }))
+              : [{
+                  _id: order.vendor || req.user._id,
+                  storeName: order.vendorStoreName || req.user.storeName || req.user.name || 'Merchant Store',
+                  phone: order.vendorAddress?.phone || req.user.phone || '',
+                  address: order.vendorAddress || req.user.address,
+                }],
             destination: {
               fullName: order.shippingAddress.fullName,
               phone: order.shippingAddress.phone,

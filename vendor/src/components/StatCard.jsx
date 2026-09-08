@@ -8,7 +8,7 @@ export const StatCard = ({
   isPositive = true,
   icon,
   color = 'orange',
-  subtitle = 'from last month',
+  subtitle = '',
 }) => {
   const iconThemeMap = {
     emerald: 'bg-emerald-50 text-emerald-600 border-emerald-100',
@@ -18,6 +18,7 @@ export const StatCard = ({
     indigo: 'bg-indigo-50 text-indigo-600 border-indigo-100',
     purple: 'bg-purple-50 text-purple-600 border-purple-100',
     amber: 'bg-amber-50 text-amber-600 border-amber-100',
+    yellow: 'bg-amber-50 text-amber-600 border-amber-100',
   };
 
   const iconStyle = iconThemeMap[color] || iconThemeMap.orange;
@@ -45,24 +46,28 @@ export const StatCard = ({
         </div>
       </div>
 
-      {/* Footer: Trend Percentage */}
-      {change && (
-        <div className="flex items-center gap-1 sm:gap-1.5 mt-2 sm:mt-3.5 pt-2 sm:pt-3 border-t border-slate-100 text-[10px] sm:text-xs">
-          <span
-            className={`inline-flex items-center gap-0.5 px-1.5 sm:px-2 py-0.5 rounded-md text-[9px] sm:text-[11px] font-bold ${
-              isPositive
-                ? 'bg-emerald-50 text-emerald-700'
-                : 'bg-rose-50 text-rose-700'
-            }`}
-          >
-            {isPositive ? (
-              <FiTrendingUp className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 stroke-[2.5]" />
-            ) : (
-              <FiTrendingDown className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 stroke-[2.5]" />
-            )}
-            <span>{change}</span>
-          </span>
-          <span className="text-slate-400 font-medium text-[9px] sm:text-[11px] hidden xs:inline truncate">{subtitle}</span>
+      {/* Footer: Trend Percentage / Subtext */}
+      {(change || subtitle) && (
+        <div className="flex items-center gap-1 sm:gap-1.5 mt-2 sm:mt-3.5 pt-2 sm:pt-3 border-t border-slate-100 text-[10px] sm:text-xs flex-wrap">
+          {change && (
+            <span
+              className={`inline-flex items-center gap-0.5 px-1.5 sm:px-2 py-0.5 rounded-md text-[9px] sm:text-[11px] font-bold ${
+                isPositive
+                  ? 'bg-emerald-50 text-emerald-700'
+                  : 'bg-rose-50 text-rose-700'
+              }`}
+            >
+              {isPositive ? (
+                <FiTrendingUp className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 stroke-[2.5]" />
+              ) : (
+                <FiTrendingDown className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 stroke-[2.5]" />
+              )}
+              <span>{change}</span>
+            </span>
+          )}
+          {subtitle && (
+            <span className="text-slate-400 font-medium text-[9px] sm:text-[11px] hidden xs:inline truncate">{subtitle}</span>
+          )}
         </div>
       )}
     </div>

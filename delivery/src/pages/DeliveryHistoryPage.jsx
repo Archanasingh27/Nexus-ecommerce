@@ -35,7 +35,6 @@ export const DeliveryHistoryPage = () => {
   }, []);
 
   const totalEarned = history.reduce((acc, o) => acc + (o.deliveryFee || 40), 0);
-  const totalValueDelivered = history.reduce((acc, o) => acc + (o.totalPrice || 0), 0);
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -62,7 +61,7 @@ export const DeliveryHistoryPage = () => {
       </div>
 
       {/* Metrics Banner */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         
         {/* Total Payouts Card */}
         <div className="glass-card p-4 flex items-center justify-between">
@@ -85,18 +84,6 @@ export const DeliveryHistoryPage = () => {
           </div>
           <div className="w-11 h-11 rounded-2xl bg-emerald-100/90 text-emerald-600 border border-emerald-200 flex items-center justify-center font-bold shadow-xs">
             <FiCheckCircle className="w-5 h-5" />
-          </div>
-        </div>
-
-        {/* Merchandise Value Card */}
-        <div className="glass-card p-4 flex items-center justify-between">
-          <div>
-            <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Goods Delivered</div>
-            <div className="text-2xl font-bold text-slate-800 mt-0.5">₹{totalValueDelivered.toLocaleString('en-IN')}</div>
-            <div className="text-[10px] text-blue-600 font-semibold mt-0.5">Total merchandise value</div>
-          </div>
-          <div className="w-11 h-11 rounded-2xl bg-blue-100/90 text-blue-600 border border-blue-200 flex items-center justify-center font-bold shadow-xs">
-            <FiPackage className="w-5 h-5" />
           </div>
         </div>
 

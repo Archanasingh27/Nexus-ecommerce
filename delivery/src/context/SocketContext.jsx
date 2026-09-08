@@ -55,7 +55,7 @@ export const SocketProvider = ({ children }) => {
     }
 
     const socketUrl = import.meta.env.VITE_API_URL
-      ? import.meta.env.VITE_API_URL.replace(/\/+$/, '')
+      ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '').replace(/\/+$/, '')
       : 'http://localhost:5000';
 
     const newSocket = io(socketUrl, {

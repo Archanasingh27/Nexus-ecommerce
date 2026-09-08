@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { FiArrowRight, FiHeadphones, FiZap } from 'react-icons/fi';
 
-// Banner 1: Audio & Tech (Light Sage Green with #fae125 Badge & #0d9488 Button)
+// Banner 1: Civil & Interior Materials
 export const PromoBannerOne = () => {
   return (
     <div className="w-full max-w-[1620px] mx-auto px-6 sm:px-8 lg:px-12 my-10 sm:my-14 lg:my-16">
@@ -10,21 +10,21 @@ export const PromoBannerOne = () => {
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#fae125] text-slate-950 font-black text-[11px] sm:text-xs uppercase tracking-wider rounded-full shadow-2xs border border-yellow-400 flex-wrap">
-              <span>🎧 HIGH-RES AUDIO FLASH DROP • 35% OFF</span>
+              <span>🏗️ CIVIL & INTERIORS • BULK CONTRACTOR DEALS</span>
             </span>
             <h3 className="text-lg sm:text-2xl md:text-3xl font-black tracking-tight text-slate-900 leading-snug break-words">
-              Immersive Spatial Audio & ANC Headphones
+              Premium Waterproofing, Cement & Marine Ply
             </h3>
             <p className="text-xs sm:text-sm text-slate-700 font-medium break-words leading-relaxed">
-              Experience audiophile-grade titanium drivers, 60h battery life, and studio-grade active noise cancellation.
+              Wholesale verified pricing on UltraTech, Dr. Fixit, Greenply, and Fevicol adhesives with instant site delivery.
             </p>
           </div>
 
           <Link
-            to="/shop?category=audio-sound"
+            to="/shop?category=civil-interiors"
             className="self-start md:self-auto inline-flex items-center justify-center px-6 py-3 bg-[#0d9488] hover:bg-teal-700 text-white font-black text-xs rounded-2xl shadow-md transition-all shrink-0 border border-teal-700 hover:scale-105 active:scale-95 cursor-pointer"
           >
-            <span>Explore Audio Deals</span>
+            <span>Explore Civil Supplies</span>
             <FiArrowRight className="w-4 h-4 ml-1.5 text-white" />
           </Link>
         </div>
@@ -36,7 +36,7 @@ export const PromoBannerOne = () => {
   );
 };
 
-// Banner 2: Flagship Tech & Wearables (Light Warm Brown / Caramel Sand with #0d9488 Button)
+// Banner 2: Electrical & Architectural Hardware
 export const PromoBannerTwo = () => {
   return (
     <div className="w-full max-w-[1620px] mx-auto px-6 sm:px-8 lg:px-12 my-10 sm:my-14 lg:my-16">
@@ -44,21 +44,21 @@ export const PromoBannerTwo = () => {
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#fae125] text-slate-950 font-black text-[11px] sm:text-xs uppercase tracking-wider rounded-full shadow-2xs border border-yellow-400 flex-wrap">
-              <span>⚡ ULTRA TECH SHOWCASE • NEXT-GEN DROPS</span>
+              <span>⚡ ELECTRICAL & HARDWARE • HEAVY DUTY</span>
             </span>
             <h3 className="text-lg sm:text-2xl md:text-3xl font-black tracking-tight text-slate-900 leading-snug break-words">
-              Flagship 5G Smartphones & Smart Wearables
+              Modular Switches, FR Wires & Smart Locks
             </h3>
             <p className="text-xs sm:text-sm text-slate-700 font-medium break-words leading-relaxed">
-              Get up to ₹15,000 instant trade-in value, Snapdragon compute engines, and 4K optical camera hardware.
+              Havells flame-retardant wiring, Godrej biometric mortise locks, and soft-close drawer channel fittings.
             </p>
           </div>
 
           <Link
-            to="/shop?category=smartphones-tech"
+            to="/shop?category=electrical"
             className="self-start md:self-auto inline-flex items-center justify-center px-6 py-3 bg-[#0d9488] hover:bg-teal-700 text-white font-black text-xs rounded-2xl shadow-md transition-all shrink-0 border border-teal-700 hover:scale-105 active:scale-95 cursor-pointer"
           >
-            <span>Shop Smart Tech</span>
+            <span>Shop Electrical Range</span>
             <FiArrowRight className="w-4 h-4 ml-1.5 text-white" />
           </Link>
         </div>

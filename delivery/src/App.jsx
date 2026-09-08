@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useRef, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ToastProvider } from './context/ToastContext';
 import { DeliveryAuthProvider, useDeliveryAuth } from './context/DeliveryAuthContext';
 import { SocketProvider } from './context/SocketContext';
@@ -15,6 +15,14 @@ import { DeliveryProfilePage } from './pages/DeliveryProfilePage';
 
 const ProtectedRiderLayout = ({ children }) => {
   const { isAuthenticated, loading } = useDeliveryAuth();
+  const location = useLocation();
+  const mainRef = useRef(null);
+
+  useEffect(() => {
+    if (mainRef.current) {
+      mainRef.current.scrollTop = 0;
+    }
+  }, [location.pathname]);
 
   if (loading) {
     return (
@@ -42,7 +50,7 @@ const ProtectedRiderLayout = ({ children }) => {
         <DeliverySidebar />
         
         {/* Main Scrollable Content Panel */}
-        <main className="flex-1 overflow-y-auto max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 pb-24 md:pb-8">
+        <main ref={mainRef} className="flex-1 overflow-y-auto max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 pb-24 md:pb-8">
           {children}
         </main>
       </div>

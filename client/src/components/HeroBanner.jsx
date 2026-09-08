@@ -101,8 +101,8 @@ export const HeroBanner = ({ heroSlides = [] }) => {
     : 'from-[#0f766e] via-[#0d9488] to-[#115e59]';
 
   return (
-    <section className="relative overflow-hidden rounded-3xl mt-2 sm:mt-3 mb-10 sm:mb-14 w-full max-w-[1620px] mx-auto px-6 sm:px-8 lg:px-12">
-      <div className={`relative rounded-3xl bg-gradient-to-r ${bgGradient} p-6 sm:p-10 lg:p-14 text-white shadow-xl border border-teal-300/40 transition-all duration-700`}>
+    <section className="relative overflow-hidden rounded-3xl mt-2 sm:mt-3 mb-10 sm:mb-14 w-full max-w-[1620px] mx-auto px-4 sm:px-8 lg:px-12">
+      <div className={`relative rounded-3xl bg-gradient-to-r ${bgGradient} p-4 sm:p-10 lg:p-14 text-white shadow-xl border border-teal-300/40 transition-all duration-700`}>
 
         {/* Yellow #fae125 & Teal ambient glow background */}
         <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-[#fae125]/20 rounded-full blur-3xl pointer-events-none"></div>
@@ -111,22 +111,22 @@ export const HeroBanner = ({ heroSlides = [] }) => {
         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
 
           {/* Left Text & CTA (7 cols) */}
-          <div className="lg:col-span-7 space-y-4 sm:space-y-5">
+          <div className="lg:col-span-7 space-y-3 sm:space-y-5">
 
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#fae125] text-slate-950 border border-yellow-300 text-[11px] sm:text-xs font-black tracking-wide uppercase shadow-sm">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#fae125] text-slate-950 border border-yellow-300 text-[10px] sm:text-xs font-black tracking-wide uppercase shadow-sm">
                 <span>{slide.tag || '⚡ SPECIAL FEATURE'}</span>
               </span>
 
               {slide.badgeText && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white border border-white/30 text-[11px] sm:text-xs font-bold shadow-2xs">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white border border-white/30 text-[10px] sm:text-xs font-bold shadow-2xs">
                   <FiShield className="w-3.5 h-3.5 text-[#fae125]" />
                   <span>{slide.badgeText}</span>
                 </span>
               )}
             </div>
 
-            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight break-words">
+            <h1 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight break-words">
               {slide.title}
             </h1>
 

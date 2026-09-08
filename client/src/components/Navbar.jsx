@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   FiSearch,
   FiShoppingBag,
+  FiShoppingCart,
   FiHeart,
   FiUser,
   FiMapPin,
@@ -42,20 +43,38 @@ export const Navbar = () => {
     return localStorage.getItem('nexus_delivery_zip') || 'Indore';
   });
 
+  const [announcementConfig, setAnnouncementConfig] = useState({
+    announcementBadge: 'FLASH SALE',
+    announcementText: 'Use code NEXUS20 for 20% OFF on all orders over ₹999!',
+    couponCode: 'NEXUS20',
+    discountPercent: 20,
+    minOrderAmount: 999,
+    showAnnouncementBar: true,
+  });
+
   const searchRef = useRef(null);
   const userMenuRef = useRef(null);
 
-  // Fetch categories for sub-navbar
+  // Fetch categories and live announcement config from backend
   useEffect(() => {
-    const fetchNavCat = async () => {
+    const fetchInitialData = async () => {
       try {
-        const { data } = await api.get('/categories');
-        setNavCategories(data.categories || []);
+        const [catRes, dealsRes] = await Promise.all([
+          api.get('/categories'),
+          api.get('/products/deals').catch(() => ({ data: {} })),
+        ]);
+        setNavCategories(catRes.data.categories || []);
+        if (dealsRes.data?.flashSaleConfig) {
+          setAnnouncementConfig((prev) => ({
+            ...prev,
+            ...dealsRes.data.flashSaleConfig,
+          }));
+        }
       } catch (err) {
-        console.error('Navbar category fetch error:', err);
+        console.error('Navbar data fetch error:', err);
       }
     };
-    fetchNavCat();
+    fetchInitialData();
   }, []);
 
   // Live autocomplete search
@@ -112,37 +131,43 @@ export const Navbar = () => {
 
   return (
     <header className="sticky top-0 z-40 w-full">
-      {/* Top Announcement Bar (Teal #0d9488 with Yellow #fae125 Flash Sale Pill) */}
-      <div className="bg-[#0d9488] text-white text-xs py-2 px-4 shadow-xs font-medium">
-        <div className="w-full max-w-[1620px] mx-auto px-2 sm:px-4 lg:px-8 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="bg-[#fae125] text-black font-black px-2.5 py-0.5 rounded-full text-[11px] border border-yellow-300 flex items-center gap-1 shadow-sm">
-              <FiZap className="w-3 h-3 text-black fill-black animate-pulse" /> FLASH SALE
-            </span>
-            <span className="hidden sm:inline text-teal-50 font-bold">
-              Use code <strong className="bg-[#fae125] text-black px-2 py-0.5 rounded-md font-black">NEXUS20</strong> for 20% OFF on all orders over ₹999!
-            </span>
-          </div>
+      {/* Top Announcement Bar (Dynamic from Backend & Admin) */}
+      {announcementConfig.showAnnouncementBar !== false && (
+        <div className="bg-[#0d9488] text-white text-xs py-2 px-4 shadow-xs font-medium transition-all">
+          <div className="w-full max-w-[1620px] mx-auto px-2 sm:px-4 lg:px-8 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="bg-[#fae125] text-black font-black px-2.5 py-0.5 rounded-full text-[11px] border border-yellow-300 flex items-center gap-1 shadow-sm shrink-0">
+                <FiZap className="w-3 h-3 text-black fill-black animate-pulse" /> {announcementConfig.announcementBadge || 'FLASH SALE'}
+              </span>
+              <span className="hidden sm:inline text-teal-50 font-bold">
+                {announcementConfig.announcementText || (
+                  <>
+                    Use code <strong className="bg-[#fae125] text-black px-2 py-0.5 rounded-md font-black">{announcementConfig.couponCode || 'NEXUS20'}</strong> for {announcementConfig.discountPercent || 20}% OFF on all orders over ₹{announcementConfig.minOrderAmount || 999}!
+                  </>
+                )}
+              </span>
+            </div>
 
-          <div className="flex items-center gap-3 text-xs font-bold">
-            {/* Clean Single Indore Location Chip */}
-            <button
-              type="button"
-              onClick={() => setLocationModalOpen(true)}
-              className="flex items-center gap-1.5 bg-teal-900/60 hover:bg-teal-900 text-teal-100 px-3 py-1 rounded-full text-[11px] font-bold border border-teal-500/80 transition-all cursor-pointer shadow-xs"
-              title="Deliver to Indore"
-            >
-              <FiMapPin className="w-3.5 h-3.5 text-[#fae125] shrink-0" />
-              <span className="text-white font-extrabold tracking-wide">Indore</span>
-            </button>
+            <div className="flex items-center gap-3 text-xs font-bold">
+              {/* Clean Single Indore Location Chip */}
+              <button
+                type="button"
+                onClick={() => setLocationModalOpen(true)}
+                className="flex items-center gap-1.5 bg-teal-900/60 hover:bg-teal-900 text-teal-100 px-3 py-1 rounded-full text-[11px] font-bold border border-teal-500/80 transition-all cursor-pointer shadow-xs"
+                title="Deliver to Indore"
+              >
+                <FiMapPin className="w-3.5 h-3.5 text-[#fae125] shrink-0" />
+                <span className="text-white font-extrabold tracking-wide">Indore</span>
+              </button>
 
-            <Link to="/orders" className="hover:text-[#fae125] transition-colors flex items-center gap-1 text-teal-50">
-              <FiPackage className="w-3.5 h-3.5 text-[#fae125]" />
-              <span>My Orders</span>
-            </Link>
+              <Link to="/orders" className="hover:text-[#fae125] transition-colors flex items-center gap-1 text-teal-50">
+                <FiPackage className="w-3.5 h-3.5 text-[#fae125]" />
+                <span>My Orders</span>
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Main Navbar (Glassmorphism Frosted Nav) */}
       <nav className="glass-nav sticky top-0 transition-all shadow-sm">
@@ -258,21 +283,21 @@ export const Navbar = () => {
                 )}
               </Link>
 
-              {/* Desktop Only: Cart / Bag Button */}
+              {/* Desktop Only: Cart Button */}
               <button
                 onClick={() => setIsDrawerOpen(true)}
                 className="relative hidden md:flex items-center gap-2 px-4 py-2.5 bg-[#0d9488] hover:bg-teal-700 text-white rounded-xl font-black text-sm transition-all shadow-md shadow-teal-600/25 border border-teal-600 group cursor-pointer"
-                title="View Shopping Bag"
+                title="View Shopping Cart"
               >
                 <div className="relative">
-                  <FiShoppingBag className="w-5 h-5 text-white group-hover:scale-110 transition-transform" />
+                  <FiShoppingCart className="w-5 h-5 text-white group-hover:scale-110 transition-transform" />
                   {itemsCount > 0 && (
                     <span className="absolute -top-2.5 -right-2.5 w-5 h-5 bg-[#fae125] text-black text-[11px] font-black rounded-full flex items-center justify-center shadow-md border-2 border-white">
                       {itemsCount}
                     </span>
                   )}
                 </div>
-                <span>Bag</span>
+                <span>Cart</span>
               </button>
 
               {/* User Account Dropdown */}
@@ -530,7 +555,7 @@ export const Navbar = () => {
                   </div>
                 </Link>
 
-                {/* 3. Bag Option */}
+                {/* 3. Cart Option */}
                 <button
                   onClick={() => {
                     setMobileMenuOpen(false);
@@ -540,12 +565,12 @@ export const Navbar = () => {
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 border border-amber-200 flex items-center justify-center shrink-0 group-hover:bg-[#fae125] group-hover:text-black transition-colors">
-                      <FiShoppingBag className="w-5 h-5" />
+                      <FiShoppingCart className="w-5 h-5" />
                     </div>
                     <div className="truncate">
-                      <div className="text-xs font-black text-slate-900">Bag</div>
+                      <div className="text-xs font-black text-slate-900">My Cart</div>
                       <div className="text-[10px] font-medium text-slate-500 truncate">
-                        Shopping bag items
+                        View cart items & checkout
                       </div>
                     </div>
                   </div>

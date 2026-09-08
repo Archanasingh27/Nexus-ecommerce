@@ -42,12 +42,26 @@ export const OrderStatusModal = ({ isOpen, onClose, order, onUpdated }) => {
 
           {/* Header */}
           <div className="flex items-center justify-between pb-4 border-b border-slate-200/70">
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-2xl bg-linear-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center shadow-lg shadow-emerald-600/20">
-                <FiPackage className="w-6 h-6" />
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-orange-500 text-white flex items-center justify-center shadow-lg shadow-orange-500/25 border border-orange-400 shrink-0">
+                <FiPackage className="w-6 h-6 text-white" />
               </div>
               <div>
-                <div className="text-[10px] font-black text-emerald-700 uppercase tracking-widest">Order Inspector</div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <div className="text-[11px] font-black text-orange-600 uppercase tracking-wider flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
+                    Order Inspector
+                  </div>
+                  <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${
+                    order.deliveryOption === 'instant' ? 'bg-amber-100 text-amber-900 border-amber-300' :
+                    order.deliveryOption === 'nextday' ? 'bg-blue-100 text-blue-900 border-blue-300' :
+                    'bg-emerald-100 text-emerald-900 border-emerald-300'
+                  }`}>
+                    {order.deliveryOption === 'instant' ? '⚡ Instant (30-45m)' :
+                     order.deliveryOption === 'nextday' ? '🚚 Next Day' :
+                     '🕒 4-Hour Express'}
+                  </span>
+                </div>
                 <h2 className="text-xl font-black text-slate-900 font-mono tracking-tight">
                   {order.orderNumber}
                 </h2>
@@ -65,7 +79,7 @@ export const OrderStatusModal = ({ isOpen, onClose, order, onUpdated }) => {
             {/* Customer Profile */}
             <div className="p-4 bg-slate-50/90 rounded-2xl border border-slate-200/80 space-y-1.5 shadow-2xs">
               <div className="flex items-center gap-1.5 font-black text-slate-900 mb-1">
-                <FiUser className="text-teal-600 w-4 h-4" />
+                <FiUser className="text-orange-500 w-4 h-4" />
                 <span>Customer Profile</span>
               </div>
               <div className="text-slate-900 font-bold truncate">{order.shippingAddress?.fullName || order.user?.name}</div>
@@ -76,7 +90,7 @@ export const OrderStatusModal = ({ isOpen, onClose, order, onUpdated }) => {
             {/* Destination Address */}
             <div className="p-4 bg-slate-50/90 rounded-2xl border border-slate-200/80 space-y-1.5 shadow-2xs">
               <div className="flex items-center gap-1.5 font-black text-slate-900 mb-1">
-                <FiMapPin className="text-[#0d9488] w-4 h-4" />
+                <FiMapPin className="text-orange-500 w-4 h-4" />
                 <span>Delivery Address</span>
               </div>
               <div className="text-slate-900 font-bold truncate">{order.shippingAddress?.street}</div>

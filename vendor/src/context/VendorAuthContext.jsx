@@ -81,7 +81,7 @@ export const VendorAuthProvider = ({ children }) => {
 
   const register = async (formData) => {
     const res = await api.post('/vendor/register', formData);
-    if (res.data.success) {
+    if (res.data.success && !res.data.isPendingApproval && res.data.token) {
       setToken(res.data.token);
       setVendor(res.data.vendor);
       localStorage.setItem('nexus_vendor_token', res.data.token);

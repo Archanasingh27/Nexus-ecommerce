@@ -240,78 +240,78 @@ export const OrderAnalyticsPage = () => {
       </div>
 
       {/* 6 KPI CARDS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-4">
         
         {/* Total Orders */}
-        <div className="bg-white border border-slate-200/90 p-4 rounded-3xl space-y-1.5 shadow-xs hover:border-slate-300 transition-all">
-          <div className="flex justify-between items-center text-slate-500">
-            <span className="text-[10px] font-bold uppercase tracking-wider">Total Orders</span>
-            <div className="w-7 h-7 rounded-xl bg-teal-50 text-teal-700 border border-teal-200 flex items-center justify-center font-bold">
-              <FiShoppingBag className="w-3.5 h-3.5" />
+        <div className="bg-white border border-slate-200/90 p-3 sm:p-4 rounded-2xl sm:rounded-3xl space-y-1 sm:space-y-1.5 shadow-xs hover:border-slate-300 transition-all">
+          <div className="flex justify-between items-center text-slate-500 gap-1">
+            <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider truncate">Total Orders</span>
+            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg sm:rounded-xl bg-teal-50 text-teal-700 border border-teal-200 flex items-center justify-center font-bold shrink-0">
+              <FiShoppingBag className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             </div>
           </div>
-          <div className="text-xl font-black text-slate-900">{totalOrdersCount}</div>
-          <span className="text-[10px] font-bold text-slate-500">Recorded orders</span>
+          <div className="text-base sm:text-xl font-black text-slate-900 truncate">{totalOrdersCount}</div>
+          <span className="text-[9px] sm:text-[10px] font-bold text-slate-500 truncate block">Recorded orders</span>
         </div>
 
         {/* Delivered */}
-        <div className="bg-white border border-slate-200/90 p-4 rounded-3xl space-y-1.5 shadow-xs hover:border-slate-300 transition-all">
-          <div className="flex justify-between items-center text-slate-500">
-            <span className="text-[10px] font-bold uppercase tracking-wider">Delivered</span>
-            <div className="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center font-bold">
-              <FiCheckCircle className="w-3.5 h-3.5" />
+        <div className="bg-white border border-slate-200/90 p-3 sm:p-4 rounded-2xl sm:rounded-3xl space-y-1 sm:space-y-1.5 shadow-xs hover:border-slate-300 transition-all">
+          <div className="flex justify-between items-center text-slate-500 gap-1">
+            <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider truncate">Delivered</span>
+            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg sm:rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center font-bold shrink-0">
+              <FiCheckCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             </div>
           </div>
-          <div className="text-xl font-black text-slate-900">{deliveredCount}</div>
-          <span className="text-[10px] font-bold text-slate-500">Handed over</span>
+          <div className="text-base sm:text-xl font-black text-slate-900 truncate">{deliveredCount}</div>
+          <span className="text-[9px] sm:text-[10px] font-bold text-slate-500 truncate block">Handed over</span>
         </div>
 
         {/* Pending */}
-        <div className="bg-white border border-slate-200/90 p-4 rounded-3xl space-y-1.5 shadow-xs hover:border-slate-300 transition-all">
-          <div className="flex justify-between items-center text-slate-500">
-            <span className="text-[10px] font-bold uppercase tracking-wider">Pending</span>
-            <div className="w-7 h-7 rounded-xl bg-amber-50 text-amber-700 border border-amber-200 flex items-center justify-center font-bold">
-              <FiClock className="w-3.5 h-3.5" />
+        <div className="bg-white border border-slate-200/90 p-3 sm:p-4 rounded-2xl sm:rounded-3xl space-y-1 sm:space-y-1.5 shadow-xs hover:border-slate-300 transition-all">
+          <div className="flex justify-between items-center text-slate-500 gap-1">
+            <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider truncate">Pending</span>
+            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg sm:rounded-xl bg-amber-50 text-amber-700 border border-amber-200 flex items-center justify-center font-bold shrink-0">
+              <FiClock className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             </div>
           </div>
-          <div className="text-xl font-black text-slate-900">{pendingCount}</div>
-          <span className="text-[10px] font-bold text-slate-500">In process</span>
+          <div className="text-base sm:text-xl font-black text-slate-900 truncate">{pendingCount}</div>
+          <span className="text-[9px] sm:text-[10px] font-bold text-slate-500 truncate block">In process</span>
         </div>
 
         {/* Cancelled */}
-        <div className="bg-white border border-slate-200/90 p-4 rounded-3xl space-y-1.5 shadow-xs hover:border-slate-300 transition-all">
-          <div className="flex justify-between items-center text-slate-500">
-            <span className="text-[10px] font-bold uppercase tracking-wider">Cancelled</span>
-            <div className="w-7 h-7 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 flex items-center justify-center font-bold">
-              <FiXCircle className="w-3.5 h-3.5" />
+        <div className="bg-white border border-slate-200/90 p-3 sm:p-4 rounded-2xl sm:rounded-3xl space-y-1 sm:space-y-1.5 shadow-xs hover:border-slate-300 transition-all">
+          <div className="flex justify-between items-center text-slate-500 gap-1">
+            <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider truncate">Cancelled</span>
+            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg sm:rounded-xl bg-rose-50 text-rose-700 border border-rose-200 flex items-center justify-center font-bold shrink-0">
+              <FiXCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             </div>
           </div>
-          <div className="text-xl font-black text-slate-900">{cancelledCount}</div>
-          <span className="text-[10px] font-bold text-rose-700">Voided orders</span>
+          <div className="text-base sm:text-xl font-black text-slate-900 truncate">{cancelledCount}</div>
+          <span className="text-[9px] sm:text-[10px] font-bold text-rose-700 truncate block">Voided</span>
         </div>
 
         {/* Returned */}
-        <div className="bg-white border border-slate-200/90 p-4 rounded-3xl space-y-1.5 shadow-xs hover:border-slate-300 transition-all">
-          <div className="flex justify-between items-center text-slate-500">
-            <span className="text-[10px] font-bold uppercase tracking-wider">Returned</span>
-            <div className="w-7 h-7 rounded-xl bg-orange-50 text-orange-700 border border-orange-200 flex items-center justify-center font-bold">
-              <FiRotateCcw className="w-3.5 h-3.5" />
+        <div className="bg-white border border-slate-200/90 p-3 sm:p-4 rounded-2xl sm:rounded-3xl space-y-1 sm:space-y-1.5 shadow-xs hover:border-slate-300 transition-all">
+          <div className="flex justify-between items-center text-slate-500 gap-1">
+            <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider truncate">Returned</span>
+            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg sm:rounded-xl bg-orange-50 text-orange-700 border border-orange-200 flex items-center justify-center font-bold shrink-0">
+              <FiRotateCcw className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             </div>
           </div>
-          <div className="text-xl font-black text-slate-900">{returnedCount}</div>
-          <span className="text-[10px] font-bold text-slate-500">Refunded/Returned</span>
+          <div className="text-base sm:text-xl font-black text-slate-900 truncate">{returnedCount}</div>
+          <span className="text-[9px] sm:text-[10px] font-bold text-slate-500 truncate block">Refunded</span>
         </div>
 
         {/* Total Order Value */}
-        <div className="bg-white border border-slate-200/90 p-4 rounded-3xl space-y-1.5 shadow-xs hover:border-slate-300 transition-all">
-          <div className="flex justify-between items-center text-slate-500">
-            <span className="text-[10px] font-bold uppercase tracking-wider">Total Value</span>
-            <div className="w-7 h-7 rounded-xl bg-[#fae125] text-slate-950 border border-yellow-400 flex items-center justify-center font-black">
-              <FiDollarSign className="w-3.5 h-3.5" />
+        <div className="bg-white border border-slate-200/90 p-3 sm:p-4 rounded-2xl sm:rounded-3xl space-y-1 sm:space-y-1.5 shadow-xs hover:border-slate-300 transition-all">
+          <div className="flex justify-between items-center text-slate-500 gap-1">
+            <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider truncate">Total Value</span>
+            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg sm:rounded-xl bg-[#fae125] text-slate-950 border border-yellow-400 flex items-center justify-center font-black shrink-0">
+              <FiDollarSign className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             </div>
           </div>
-          <div className="text-xl font-black text-slate-900 truncate">₹{totalOrderValue.toLocaleString('en-IN')}</div>
-          <span className="text-[10px] font-bold text-slate-500">Order gross sum</span>
+          <div className="text-base sm:text-xl font-black text-slate-900 truncate">₹{totalOrderValue.toLocaleString('en-IN')}</div>
+          <span className="text-[9px] sm:text-[10px] font-bold text-slate-500 truncate block">Order sum</span>
         </div>
 
       </div>

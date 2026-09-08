@@ -36,12 +36,20 @@ export const AvailableOrdersPage = () => {
   const [filterType, setFilterType] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedOrderForDetails, setSelectedOrderForDetails] = useState(null);
+  const [deliveryConfig, setDeliveryConfig] = useState({
+    payoutPerTrip: 40,
+    coverageRadiusKm: 5.0,
+    serviceCity: rider?.serviceCity || 'Indore',
+  });
 
   const fetchAvailableOrders = async () => {
     setLoading(true);
     try {
       const { data } = await api.get('/delivery/available-orders');
       setOrders(data.orders || []);
+      if (data.deliveryConfig) {
+        setDeliveryConfig(data.deliveryConfig);
+      }
     } catch (err) {
       addToast(err.response?.data?.message || 'Failed to fetch available orders', 'error');
     } finally {
@@ -103,7 +111,9 @@ export const AvailableOrdersPage = () => {
     return true;
   });
 
-  const totalAvailablePayout = orders.reduce((sum, o) => sum + (o.deliveryFee || 40), 0);
+  const defaultPayout = deliveryConfig?.payoutPerTrip ?? 40;
+  const totalAvailablePayout = orders.reduce((sum, o) => sum + (o.deliveryFee || defaultPayout), 0);
+  const avgPayout = orders.length > 0 ? Math.round(totalAvailablePayout / orders.length) : defaultPayout;
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -137,7 +147,7 @@ export const AvailableOrdersPage = () => {
             <p className="text-xs text-slate-500 font-medium flex items-center gap-1.5">
               <span>Live pickup requests in</span>
               <span className="font-semibold text-orange-700">
-                📍 {rider?.serviceCity || 'Indore'}
+                📍 {rider?.serviceCity || deliveryConfig?.serviceCity || 'Indore'}
               </span>
             </p>
           </div>
@@ -151,12 +161,12 @@ export const AvailableOrdersPage = () => {
 
             <div className="p-3 bg-white/70 rounded-2xl border border-orange-200/60 shadow-2xs">
               <div className="text-[10px] font-medium uppercase tracking-wider text-slate-500">Avg. Payout</div>
-              <div className="text-base font-bold text-slate-800 mt-0.5">₹40 / trip</div>
+              <div className="text-base font-bold text-slate-800 mt-0.5">₹{avgPayout} / trip</div>
             </div>
 
             <div className="p-3 bg-white/70 rounded-2xl border border-orange-200/60 shadow-2xs col-span-2 sm:col-span-1">
               <div className="text-[10px] font-medium uppercase tracking-wider text-slate-500">Coverage Radius</div>
-              <div className="text-base font-bold text-slate-800 mt-0.5">~5.0 km</div>
+              <div className="text-base font-bold text-slate-800 mt-0.5">~{deliveryConfig?.coverageRadiusKm || 5.0} km</div>
             </div>
           </div>
 
@@ -230,16 +240,16 @@ export const AvailableOrdersPage = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
           {filteredOrders.map((order) => {
-            const payout = order.deliveryFee || 40;
+            const payout = order.deliveryFee || defaultPayout;
             const isCOD = order.paymentMethod === 'Cash on Delivery';
             const totalItems = order.orderItems?.reduce((acc, item) => acc + item.quantity, 0) || 1;
 
-            const isMultiVendor = order.vendors && order.vendors.length > 1;
+            const isMultiVendor = !order.vendorStoreName && order.vendors && order.vendors.length > 1;
             const primaryVendor = order.vendors?.[0] || {};
-            const vendorStore = isMultiVendor
+            const vendorStore = order.vendorStoreName || (isMultiVendor
               ? `${order.vendors.length} Stores (${order.vendors.map((v) => v.storeName || 'Store').join(', ')})`
-              : primaryVendor.storeName || order.orderItems?.[0]?.vendorStoreName || 'Nexus Central Hub';
-            const vAddr = primaryVendor.vendorAddress || primaryVendor.vendor?.address || {
+              : primaryVendor.storeName || order.orderItems?.[0]?.vendorStoreName || 'Nexus Central Hub');
+            const vAddr = order.vendorAddress || primaryVendor.vendorAddress || primaryVendor.vendor?.address || {
               street: 'Plot 18, Commercial Hub, Scheme 54',
               city: 'Indore',
             };
@@ -262,9 +272,22 @@ export const AvailableOrdersPage = () => {
                       <span className="text-[10px] font-bold uppercase tracking-wider text-orange-700 bg-orange-100/90 px-2.5 py-0.5 rounded-md border border-orange-200">
                         Payout: ₹{payout}
                       </span>
+                      {order.deliveryOption === 'instant' ? (
+                        <span className="text-[10px] font-black text-amber-900 bg-amber-100 px-2 py-0.5 rounded-md border border-amber-300 animate-pulse">
+                          ⚡ Instant (30m)
+                        </span>
+                      ) : order.deliveryOption === 'nextday' ? (
+                        <span className="text-[10px] font-black text-blue-900 bg-blue-100 px-2 py-0.5 rounded-md border border-blue-300">
+                          🚚 Next Day
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-black text-emerald-900 bg-emerald-100 px-2 py-0.5 rounded-md border border-emerald-300">
+                          🕒 4-Hour Express
+                        </span>
+                      )}
                       {isMultiVendor && (
                         <span className="text-[10px] font-bold text-purple-700 bg-purple-100 px-2 py-0.5 rounded-md border border-purple-200">
-                          🏢 {order.vendors.length} Pickup Stops
+                          🏢 {order.vendors.length} Stops
                         </span>
                       )}
                     </div>
@@ -356,7 +379,7 @@ export const AvailableOrdersPage = () => {
       {/* DETAILED LOCATION & ROUTE MODAL (Shown on Card Click) */}
       {selectedOrderForDetails && (() => {
         const order = selectedOrderForDetails;
-        const payout = order.deliveryFee || 40;
+        const payout = order.deliveryFee || defaultPayout;
         const isCOD = order.paymentMethod === 'Cash on Delivery';
         const totalItems = order.orderItems?.reduce((acc, item) => acc + item.quantity, 0) || 1;
         const isMultiVendor = order.vendors && order.vendors.length > 1;
@@ -367,18 +390,29 @@ export const AvailableOrdersPage = () => {
         const customerMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(customerFullAddress)}`;
 
         // Determine vendor pickup stops
-        const pickupStops = (order.vendors && order.vendors.length > 0)
-          ? order.vendors
-          : [{
-              storeName: order.orderItems?.[0]?.vendorStoreName || 'Nexus Central Hub',
-              vendorPhone: '',
-              vendorAddress: {
+        const pickupStops = order.vendorStoreName
+          ? [{
+              storeName: order.vendorStoreName,
+              vendorPhone: order.vendor?.phone || '',
+              vendorAddress: order.vendorAddress || {
                 street: 'Plot 18, Commercial Hub, Scheme 54',
                 city: 'Indore',
                 state: 'Madhya Pradesh',
                 postalCode: '452010',
               },
-            }];
+            }]
+          : ((order.vendors && order.vendors.length > 0)
+            ? order.vendors
+            : [{
+                storeName: order.orderItems?.[0]?.vendorStoreName || 'Nexus Central Hub',
+                vendorPhone: '',
+                vendorAddress: {
+                  street: 'Plot 18, Commercial Hub, Scheme 54',
+                  city: 'Indore',
+                  state: 'Madhya Pradesh',
+                  postalCode: '452010',
+                },
+              }]);
 
         return (
           <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">

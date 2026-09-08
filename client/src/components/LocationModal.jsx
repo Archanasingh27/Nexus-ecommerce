@@ -71,7 +71,7 @@ export const LocationModal = ({ isOpen, onClose, onSelectLocation }) => {
       <div onClick={onClose} className="fixed inset-0 bg-slate-950/60 backdrop-blur-md transition-opacity" />
 
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative w-full max-w-lg glass-modal bg-white rounded-3xl p-6 sm:p-7 z-10 border-2 border-yellow-300 shadow-2xl animate-in zoom-in-95 duration-150">
+        <div className="relative w-full max-w-lg glass-modal bg-white rounded-3xl p-5 sm:p-7 z-10 border-2 border-yellow-300 shadow-2xl animate-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
           
           {/* Header */}
           <div className="flex items-center justify-between pb-4 border-b border-teal-100">

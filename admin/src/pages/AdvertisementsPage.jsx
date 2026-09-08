@@ -100,11 +100,11 @@ export const AdvertisementsPage = () => {
 
   return (
     <div className="space-y-6">
-      
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-orange-200/60">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-linear-to-r from-orange-500 to-amber-500 text-white text-xs font-black uppercase tracking-wider mb-2 shadow-xs">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 text-white text-xs font-black uppercase tracking-wider mb-2 shadow-xs">
             <FiTag className="w-3.5 h-3.5" />
             <span>Storefront Marketing Engine</span>
           </div>
@@ -126,68 +126,61 @@ export const AdvertisementsPage = () => {
         </button>
       </div>
 
-      {/* Quick Summary Glass Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="glass-card p-4">
-          <div className="text-[10px] font-black uppercase tracking-wider text-slate-400">Total Banners</div>
-          <div className="text-2xl font-black text-slate-900 mt-1">{totalAds}</div>
+      {/* Quick Summary - 1 Linear & Simple */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="bg-white rounded-xl py-2.5 px-3.5 border border-slate-200 flex items-center justify-between shadow-2xs">
+          <span className="text-xs font-bold text-slate-600">Total Banners</span>
+          <span className="text-sm font-black text-slate-900 font-mono">{totalAds}</span>
         </div>
-        <div className="glass-card p-4 border-emerald-200/60 bg-emerald-50/40">
-          <div className="text-[10px] font-black uppercase tracking-wider text-emerald-700 flex items-center gap-1">
-            <FiVideo className="w-3 h-3" /> Video Ads
-          </div>
-          <div className="text-2xl font-black text-emerald-950 mt-1">{videoAds}</div>
+        <div className="bg-white rounded-xl py-2.5 px-3.5 border border-slate-200 flex items-center justify-between shadow-2xs">
+          <span className="text-xs font-bold text-slate-600">Video Ads</span>
+          <span className="text-sm font-black text-emerald-600 font-mono">{videoAds}</span>
         </div>
-        <div className="glass-card p-4 border-amber-200/60 bg-amber-50/40">
-          <div className="text-[10px] font-black uppercase tracking-wider text-amber-700 flex items-center gap-1">
-            <FiImage className="w-3 h-3" /> Image Ads
-          </div>
-          <div className="text-2xl font-black text-amber-950 mt-1">{imageAds}</div>
+        <div className="bg-white rounded-xl py-2.5 px-3.5 border border-slate-200 flex items-center justify-between shadow-2xs">
+          <span className="text-xs font-bold text-slate-600">Image Ads</span>
+          <span className="text-sm font-black text-amber-600 font-mono">{imageAds}</span>
         </div>
-        <div className="glass-card p-4 border-blue-200/60 bg-blue-50/40">
-          <div className="text-[10px] font-black uppercase tracking-wider text-blue-700 flex items-center gap-1">
-            <FiPercent className="w-3 h-3" /> Simple / Codes
-          </div>
-          <div className="text-2xl font-black text-slate-900 mt-1">{simpleAds}</div>
+        <div className="bg-white rounded-xl py-2.5 px-3.5 border border-slate-200 flex items-center justify-between shadow-2xs">
+          <span className="text-xs font-bold text-slate-600">Simple / Codes</span>
+          <span className="text-sm font-black text-blue-600 font-mono">{simpleAds}</span>
         </div>
       </div>
 
-      {/* Filter Controls in Glass Panel */}
-      <div className="glass-panel p-4 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
-        
-        {/* Type selector chips */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+      {/* Filter Toolbar - Clean & Minimal */}
+      <div className="bg-white p-2.5 sm:p-3 rounded-xl border border-slate-200 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+        {/* Simple Type Tabs */}
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
           {[
-            { id: 'all', label: 'All Formats' },
-            { id: 'image', label: '🖼️ Image Ads' },
-            { id: 'video', label: '🎥 Video Ads' },
-            { id: 'simple', label: '🏷️ Simple Codes' },
+            { id: 'all', label: 'All' },
+            { id: 'image', label: 'Image Ads' },
+            { id: 'video', label: 'Video Ads' },
+            { id: 'simple', label: 'Simple Codes' },
           ].map((t) => (
             <button
               key={t.id}
               onClick={() => setTypeFilter(t.id)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer shrink-0 ${
-                typeFilter === t.id
-                  ? 'bg-linear-to-r from-orange-500 to-amber-500 text-white shadow-xs'
-                  : 'bg-white/80 text-slate-700 hover:bg-orange-50/60 border border-slate-200/80'
-              }`}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer shrink-0 ${typeFilter === t.id
+                  ? 'bg-slate-900 text-white shadow-xs'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
+                }`}
             >
               {t.label}
             </button>
           ))}
         </div>
 
-        {/* Search and Placement */}
-        <div className="flex items-center gap-3">
+        {/* Placement Selector & Search */}
+        <div className="flex items-center gap-2 flex-wrap">
           <select
             value={placementFilter}
             onChange={(e) => setPlacementFilter(e.target.value)}
-            className="px-3 py-1.5 bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800 rounded-xl outline-none focus:border-[#0d9488] cursor-pointer"
+            className="px-3 py-1.5 bg-slate-50 border border-slate-200 text-xs font-medium text-slate-700 rounded-lg outline-none focus:border-slate-400 cursor-pointer"
           >
             <option value="all">All Placements</option>
-            <option value="category_feed">Category Feed</option>
+            <option value="hero_slide">Hero Slider</option>
             <option value="promo_banner">Promo Banner</option>
-            <option value="hero_slide">Hero Slide</option>
+            <option value="category_feed">Category Feed</option>
+            <option value="global_bar">Announcement Bar</option>
           </select>
 
           <form onSubmit={handleSearchSubmit} className="relative">
@@ -196,12 +189,11 @@ export const AdvertisementsPage = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search ads..."
-              className="w-40 sm:w-52 bg-slate-50 border border-slate-200 text-xs rounded-xl py-1.5 pl-8 pr-3 outline-none focus:border-[#0d9488]"
+              className="w-40 sm:w-52 bg-slate-50 border border-slate-200 text-xs rounded-lg py-1.5 pl-8 pr-3 outline-none focus:border-slate-400 font-medium text-slate-800"
             />
             <FiSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
           </form>
         </div>
-
       </div>
 
       {/* Ads Card Grid */}
@@ -231,9 +223,8 @@ export const AdvertisementsPage = () => {
           {ads.map((ad) => (
             <div
               key={ad._id}
-              className={`relative overflow-hidden rounded-3xl p-6 shadow-md border transition-all ${ad.borderColor || 'border-slate-200'} ${ad.bgGradient || 'bg-white'} ${
-                !ad.isActive ? 'opacity-60 grayscale-[40%]' : ''
-              }`}
+              className={`relative overflow-hidden rounded-3xl p-6 shadow-md border transition-all ${ad.borderColor || 'border-slate-200'} ${ad.bgGradient || 'bg-white'} ${!ad.isActive ? 'opacity-60 grayscale-[40%]' : ''
+                }`}
             >
               {/* Header Badges */}
               <div className="flex items-center justify-between gap-2 mb-3">
@@ -242,13 +233,12 @@ export const AdvertisementsPage = () => {
                     {ad.tag || 'PROMO'}
                   </span>
 
-                  <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                    ad.type === 'video'
+                  <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${ad.type === 'video'
                       ? 'bg-purple-100 text-purple-900 border border-purple-200'
                       : ad.type === 'image'
-                      ? 'bg-emerald-100 text-emerald-900 border border-emerald-200'
-                      : 'bg-amber-100 text-amber-900 border border-amber-200'
-                  }`}>
+                        ? 'bg-emerald-100 text-emerald-900 border border-emerald-200'
+                        : 'bg-amber-100 text-amber-900 border border-amber-200'
+                    }`}>
                     {ad.type === 'video' && <FiVideo className="w-3 h-3" />}
                     {ad.type === 'image' && <FiImage className="w-3 h-3" />}
                     {ad.type === 'simple' && <FiPercent className="w-3 h-3" />}

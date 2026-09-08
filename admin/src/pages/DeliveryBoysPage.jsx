@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { useToast } from '../context/ToastContext';
 import {
@@ -20,14 +21,27 @@ import {
   FiShield,
   FiPackage,
   FiDollarSign,
+  FiSliders,
+  FiInfo,
+  FiChevronRight,
 } from 'react-icons/fi';
 
 export const DeliveryBoysPage = () => {
+  const navigate = useNavigate();
   const { addToast } = useToast();
   const [riders, setRiders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
+
+  // Payout & Logistics Settings State
+  const [deliverySettings, setDeliverySettings] = useState({
+    payoutPerTrip: 40,
+    coverageRadiusKm: 5.0,
+    customerDeliveryFee: 40,
+    freeDeliveryThreshold: 999,
+    serviceCity: 'Indore',
+  });
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -45,6 +59,37 @@ export const DeliveryBoysPage = () => {
     isAvailable: true,
   });
 
+  const fetchDeliverySettings = async () => {
+    try {
+      const { data } = await api.get('/admin/delivery-settings');
+      if (data?.settings) {
+        setDeliverySettings({
+          payoutPerTrip: data.settings.payoutPerTrip ?? 40,
+          coverageRadiusKm: data.settings.coverageRadiusKm ?? 5.0,
+          customerDeliveryFee: data.settings.customerDeliveryFee ?? 40,
+          freeDeliveryThreshold: data.settings.freeDeliveryThreshold ?? 999,
+          serviceCity: data.settings.serviceCity || 'Indore',
+        });
+      }
+    } catch (err) {
+      console.error('Failed to load delivery settings:', err);
+    }
+  };
+
+  const handleSaveDeliverySettings = async (e) => {
+    e.preventDefault();
+    setSavingPayout(true);
+    try {
+      const { data } = await api.put('/admin/delivery-settings', deliverySettings);
+      addToast(data.message || 'Delivery payout & coverage settings saved!', 'success');
+      setIsPayoutModalOpen(false);
+    } catch (err) {
+      addToast(err.response?.data?.message || 'Failed to save settings', 'error');
+    } finally {
+      setSavingPayout(false);
+    }
+  };
+
   const fetchRiders = async () => {
     setLoading(true);
     try {
@@ -59,6 +104,7 @@ export const DeliveryBoysPage = () => {
 
   useEffect(() => {
     fetchRiders();
+    fetchDeliverySettings();
   }, []);
 
   const handleOpenCreateModal = () => {
@@ -181,11 +227,23 @@ export const DeliveryBoysPage = () => {
 
         <div className="flex items-center gap-3 self-start sm:self-auto">
           <button
-            onClick={fetchRiders}
+            onClick={() => {
+              fetchRiders();
+              fetchDeliverySettings();
+            }}
             className="p-2.5 bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white rounded-xl border border-blue-200 hover:border-blue-600 transition-all shadow-2xs cursor-pointer"
             title="Refresh Fleet Status"
           >
             <FiRefreshCw className="w-4 h-4" />
+          </button>
+
+          <button
+            onClick={() => navigate('/delivery-settings')}
+            className="px-3.5 py-2.5 bg-orange-50 hover:bg-orange-600 text-orange-700 hover:text-white text-xs font-bold rounded-xl border border-orange-200 hover:border-orange-600 flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer"
+            title="Configure Delivery Payout & Rates"
+          >
+            <FiSliders className="w-4 h-4 text-orange-600 group-hover:text-white" />
+            <span>Payout Settings (₹{deliverySettings.payoutPerTrip}/trip)</span>
           </button>
 
           <button
@@ -196,6 +254,28 @@ export const DeliveryBoysPage = () => {
             <span>Add Delivery Partner</span>
           </button>
         </div>
+      </div>
+
+      {/* Fleet Payout Summary Strip */}
+      <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3 text-xs text-slate-600 flex-wrap">
+          <span className="font-bold text-slate-900 flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-orange-500"></span>
+            Trip Payout: <span className="text-orange-600 font-black">₹{deliverySettings.payoutPerTrip} / trip</span>
+          </span>
+          <span className="text-slate-300">•</span>
+          <span>Coverage: <strong className="text-slate-800">{deliverySettings.coverageRadiusKm} km</strong></span>
+          <span className="text-slate-300">•</span>
+          <span>Hub: <strong className="text-slate-800">{deliverySettings.serviceCity || 'Indore'}</strong></span>
+        </div>
+
+        <button
+          onClick={() => navigate('/delivery-settings')}
+          className="text-xs font-bold text-orange-600 hover:text-orange-700 hover:underline flex items-center gap-1 cursor-pointer"
+        >
+          <span>Change Settings</span>
+          <FiChevronRight className="w-3.5 h-3.5" />
+        </button>
       </div>
 
       {/* Metric Cards Banner */}
@@ -215,7 +295,7 @@ export const DeliveryBoysPage = () => {
             <FiCheckCircle className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Online On-Duty</div>
+            <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Online</div>
             <div className="text-xl font-black text-emerald-600">{onlineCount} Active</div>
           </div>
         </div>
@@ -355,7 +435,7 @@ export const DeliveryBoysPage = () => {
                         title="Click to toggle Online/Offline"
                       >
                         <span className={`w-1.5 h-1.5 rounded-full ${rider.isAvailable ? 'bg-white animate-pulse' : 'bg-slate-400'}`} />
-                        <span>{rider.isAvailable ? 'ONLINE (On Duty)' : 'OFFLINE'}</span>
+                        <span>{rider.isAvailable ? 'ONLINE' : 'OFFLINE'}</span>
                       </button>
                     </td>
 

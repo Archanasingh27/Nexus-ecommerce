@@ -28,6 +28,7 @@ import {
 import api from '../api/axios';
 import { useVendorAuth } from '../context/VendorAuthContext';
 import { useToast } from '../context/ToastContext';
+import { StatCard } from '../components/StatCard';
 
 const INVENTORY_COLORS = {
   inStock: '#10b981',
@@ -116,36 +117,38 @@ export const VendorProductAnalyticsPage = () => {
         </div>
       </div>
 
-      {/* KPI Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <div className="glass-card p-5 space-y-2">
-          <span className="text-[11px] font-black uppercase text-slate-400">Total Catalog Items</span>
-          <div className="text-2xl font-black text-slate-900 font-mono">{stats?.productsCount || 0} SKUs</div>
-          <div className="text-[10px] text-emerald-700 font-bold">{stats?.inStockCount || 0} healthy in stock</div>
-        </div>
-
-        <div className="glass-card p-5 space-y-2">
-          <span className="text-[11px] font-black uppercase text-slate-400">Inventory Valuation</span>
-          <div className="text-2xl font-black text-purple-600 font-mono">₹{stats?.totalCatalogValuation?.toLocaleString('en-IN') || 0}</div>
-          <div className="text-[10px] text-slate-500 font-medium">{stats?.totalStockUnits || 0} total stock units</div>
-        </div>
-
-        <div className="glass-card p-5 space-y-2">
-          <span className="text-[11px] font-black uppercase text-slate-400">Customer Satisfaction</span>
-          <div className="text-2xl font-black text-amber-500 font-mono flex items-center gap-1.5">
-            <FiStar className="w-5 h-5 fill-amber-400 text-amber-400" />
-            <span>{stats?.averageRating || 4.9} / 5.0</span>
-          </div>
-          <div className="text-[10px] text-slate-500 font-medium">{stats?.totalReviewsCount || 0} verified reviews</div>
-        </div>
-
-        <div className="glass-card p-5 space-y-2">
-          <span className="text-[11px] font-black uppercase text-slate-400">Stock Risk Alert</span>
-          <div className="text-2xl font-black text-rose-600 font-mono">
-            {(stats?.lowStockCount || 0) + (stats?.outOfStockCount || 0)}
-          </div>
-          <div className="text-[10px] text-rose-700 font-bold">Needs warehouse restock</div>
-        </div>
+      {/* KPI Metric Cards (Compact 2-col on Mobile) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-5">
+        <StatCard
+          title="Total Catalog Items"
+          value={`${stats?.productsCount || 0} SKUs`}
+          change={`${stats?.inStockCount || 0} healthy in stock`}
+          isPositive={true}
+          icon={<FiBox />}
+          color="blue"
+        />
+        <StatCard
+          title="Inventory Valuation"
+          value={`₹${stats?.totalCatalogValuation?.toLocaleString('en-IN') || 0}`}
+          subtitle={`${stats?.totalStockUnits || 0} total units`}
+          icon={<span className="font-black text-sm">₹</span>}
+          color="emerald"
+        />
+        <StatCard
+          title="Customer Satisfaction"
+          value={`${stats?.averageRating || 4.9} / 5.0`}
+          subtitle={`${stats?.totalReviewsCount || 0} reviews`}
+          icon={<FiStar className="fill-amber-400 text-amber-500" />}
+          color="amber"
+        />
+        <StatCard
+          title="Stock Risk Alert"
+          value={(stats?.lowStockCount || 0) + (stats?.outOfStockCount || 0)}
+          subtitle="Needs warehouse restock"
+          isPositive={false}
+          icon={<FiAlertTriangle />}
+          color="yellow"
+        />
       </div>
 
       {/* Graphs 2-Column Grid */}

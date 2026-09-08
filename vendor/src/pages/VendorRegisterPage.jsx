@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiShoppingBag, FiArrowRight, FiCheck } from 'react-icons/fi';
+import { FiShoppingBag, FiArrowRight, FiCheck, FiClock, FiCheckCircle, FiShield } from 'react-icons/fi';
 import { useVendorAuth } from '../context/VendorAuthContext';
 import { useToast } from '../context/ToastContext';
 
@@ -24,6 +24,8 @@ export const VendorRegisterPage = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [registeredStore, setRegisteredStore] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,7 +36,7 @@ export const VendorRegisterPage = () => {
 
     setLoading(true);
     try {
-      await register({
+      const res = await register({
         name: formData.name,
         email: formData.email,
         password: formData.password,
@@ -50,14 +52,85 @@ export const VendorRegisterPage = () => {
           country: 'India',
         },
       });
-      addToast('Merchant onboarding complete! Welcome to Nexus.', 'success');
-      navigate('/');
+
+      setRegisteredStore(formData.storeName);
+      setSubmitted(true);
+      addToast('Merchant application submitted for Admin approval!', 'success');
     } catch (err) {
       addToast(err.response?.data?.message || 'Registration failed', 'error');
     } finally {
       setLoading(false);
     }
   };
+
+  if (submitted) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center p-4 sm:p-6 bg-gradient-to-br from-white via-orange-50/40 to-amber-50/30">
+        <div className="w-full max-w-lg space-y-6 animate-in fade-in zoom-in-95 duration-300">
+          <div className="glass-card p-6 sm:p-8 text-center space-y-5 shadow-2xl border border-orange-200">
+            {/* Status Icon */}
+            <div className="relative inline-block">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-amber-50 border-2 border-amber-400 text-amber-600 flex items-center justify-center mx-auto shadow-md shadow-amber-500/10">
+                <FiClock className="w-8 h-8 sm:w-10 sm:h-10 text-amber-500" />
+              </div>
+              <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs shadow-xs">
+                <FiCheck className="w-3.5 h-3.5 stroke-[3]" />
+              </span>
+            </div>
+
+            <div className="space-y-2">
+              <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-300">
+                Application Received
+              </span>
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                Pending Admin Approval
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
+                Your merchant application for <span className="font-extrabold text-orange-600">{registeredStore}</span> has been forwarded to the <span className="font-bold text-slate-800">NEXUS Central Admin</span> for verification.
+              </p>
+            </div>
+
+            {/* Summary Highlights */}
+            <div className="p-4 bg-orange-50/60 rounded-2xl border border-orange-200/80 text-left space-y-2 text-xs">
+              <div className="flex items-center justify-between text-slate-700">
+                <span className="font-semibold text-slate-500">Status:</span>
+                <span className="font-black text-amber-700 flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                  Under Admin Review
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-slate-700">
+                <span className="font-semibold text-slate-500">Store Name:</span>
+                <span className="font-bold text-slate-900">{registeredStore}</span>
+              </div>
+              <div className="flex items-center justify-between text-slate-700">
+                <span className="font-semibold text-slate-500">Next Steps:</span>
+                <span className="font-bold text-slate-900">Sign in after Admin approval</span>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="pt-2 flex flex-col sm:flex-row gap-2.5">
+              <Link
+                to="/login"
+                className="flex-1 py-3 px-4 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black text-xs rounded-xl shadow-md transition-all text-center"
+              >
+                Go to Vendor Login
+              </Link>
+              <a
+                href="http://localhost:5173"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 py-3 px-4 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold text-xs rounded-xl transition-all text-center"
+              >
+                Visit Storefront
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-4 sm:p-6 bg-gradient-to-br from-white via-orange-50/40 to-amber-50/30">

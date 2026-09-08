@@ -10,17 +10,20 @@ import {
   FiPercent,
   FiShoppingBag,
   FiTruck,
+  FiDollarSign,
   FiUsers,
   FiSettings,
   FiDatabase,
   FiX,
   FiChevronRight,
+  FiMessageSquare,
 } from 'react-icons/fi';
 import api from '../api/axios';
 import { useToast } from '../context/ToastContext';
 
 const navItems = [
   { path: '/', label: 'Overview & KPIs', icon: FiGrid, color: 'text-orange-600 bg-orange-100/90 border-orange-300' },
+  { path: '/messages', label: 'Support & Inquiries', icon: FiMessageSquare, color: 'text-teal-600 bg-teal-100/90 border-teal-300' },
   { path: '/analytics', label: 'Sales Analytics', icon: FiBarChart2, color: 'text-blue-600 bg-blue-100/90 border-blue-300' },
   { path: '/order-analytics', label: 'Order Analytics', icon: FiShoppingBag, color: 'text-emerald-600 bg-emerald-100/90 border-emerald-300' },
   { path: '/product-analytics', label: 'Product Analytics', icon: FiPieChart, color: 'text-purple-600 bg-purple-100/90 border-purple-300' },
@@ -30,6 +33,7 @@ const navItems = [
   { path: '/advertisements', label: 'Advertisements', icon: FiTag, color: 'text-rose-600 bg-rose-100/90 border-rose-300' },
   { path: '/orders', label: 'Orders & Shipments', icon: FiShoppingBag, color: 'text-blue-700 bg-blue-100/90 border-blue-300' },
   { path: '/delivery-boys', label: 'Delivery Fleet', icon: FiTruck, color: 'text-emerald-700 bg-emerald-100/90 border-emerald-300' },
+  { path: '/delivery-settings', label: 'Delivery Tiers & Fees', icon: FiDollarSign, color: 'text-amber-600 bg-amber-100/90 border-amber-300' },
   { path: '/users', label: 'Customer Users', icon: FiUsers, color: 'text-indigo-600 bg-indigo-100/90 border-indigo-300' },
   { path: '/vendors', label: 'Vendors & Sellers', icon: FiShoppingBag, color: 'text-orange-600 bg-orange-100/90 border-orange-300' },
   { path: '/profile', label: 'Settings', icon: FiSettings, color: 'text-slate-700 bg-slate-100/90 border-slate-300' },

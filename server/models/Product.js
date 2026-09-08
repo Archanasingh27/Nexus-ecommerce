@@ -85,7 +85,7 @@ const productSchema = new mongoose.Schema(
     approvalStatus: {
       type: String,
       enum: ['pending', 'approved', 'rejected'],
-      default: 'approved',
+      default: 'pending',
     },
     subcategory: {
       type: String,

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import { StatCard } from '../components/StatCard';
 import { RevenueChart } from '../components/RevenueChart';
@@ -6,8 +7,8 @@ import { RecentOrdersTable } from '../components/RecentOrdersTable';
 import { TopProductsTable } from '../components/TopProductsTable';
 import { LowStockAlert } from '../components/LowStockAlert';
 import { OrderStatusModal } from '../components/OrderStatusModal';
-import { ProductModal } from '../components/ProductModal';
 import { FlashSaleModal } from '../components/FlashSaleModal';
+import { useToast } from '../context/ToastContext';
 import {
   FiDollarSign,
   FiShoppingBag,
@@ -16,18 +17,20 @@ import {
   FiPlus,
   FiRefreshCw,
   FiClock,
+  FiTrendingUp,
+  FiZap,
 } from 'react-icons/fi';
 
 export const DashboardPage = () => {
+  const { addToast } = useToast();
   const [analytics, setAnalytics] = useState(null);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [isFlashSaleModalOpen, setIsFlashSaleModalOpen] = useState(false);
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = async (showToast = false) => {
     try {
       const [analyticsRes, catRes] = await Promise.all([
         api.get('/admin/analytics'),
@@ -35,6 +38,9 @@ export const DashboardPage = () => {
       ]);
       setAnalytics(analyticsRes.data);
       setCategories(catRes.data.categories || []);
+      if (showToast) {
+        addToast('Executive analytics & metrics refreshed!', 'success');
+      }
     } catch (err) {
       console.error('Failed to load admin analytics:', err);
     } finally {
@@ -43,14 +49,14 @@ export const DashboardPage = () => {
   };
 
   useEffect(() => {
-    fetchDashboardData();
+    fetchDashboardData(false);
   }, []);
 
   if (loading) {
     return (
-      <div className="p-8 text-center">
-        <div className="w-10 h-10 border-4 border-[#0d9488] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-        <p className="text-xs font-bold text-slate-500">Loading Real-Time Admin Metrics...</p>
+      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3">
+        <div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-xs font-bold text-slate-500">Loading Real-Time Analytics...</p>
       </div>
     );
   }
@@ -63,73 +69,82 @@ export const DashboardPage = () => {
   };
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-8">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-8 max-w-7xl mx-auto">
       
       {/* Top Header & Quick Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
         <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+              Live Platform Telemetry
+            </span>
+          </div>
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
             Executive Command Dashboard
           </h1>
-          <p className="text-xs text-slate-500 mt-1 font-medium">
-            Real-time sales telemetry, inventory tracking, and fulfillment overview.
+          <p className="text-xs text-slate-500 mt-0.5 font-medium">
+            Real-time multi-vendor sales telemetry, inventory status, and order dispatch tracking.
           </p>
         </div>
 
-        <div className="flex items-center gap-3 flex-wrap">
-          {/* BLUE BUTTON: Refresh Metrics */}
+        {/* Quick Action Buttons */}
+        <div className="grid grid-cols-12 gap-2 w-full sm:w-auto sm:flex sm:items-center sm:gap-2.5">
+          {/* Refresh Button */}
           <button
-            onClick={fetchDashboardData}
-            className="p-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl border border-blue-500 transition-all shadow-glow-blue cursor-pointer active:scale-95"
-            title="Refresh Real-Time Metrics"
+            onClick={() => fetchDashboardData(true)}
+            className="col-span-2 sm:col-auto p-2.5 bg-white hover:bg-slate-50 text-slate-700 rounded-xl border border-slate-200 flex items-center justify-center transition-all shadow-2xs cursor-pointer active:scale-95"
+            title="Refresh Live Metrics"
           >
-            <FiRefreshCw className="w-4 h-4 text-white" />
+            <FiRefreshCw className={`w-4 h-4 text-slate-600 ${loading ? 'animate-spin' : ''}`} />
           </button>
 
-          {/* YELLOW BUTTON: Flash Sale Deal Timer Manager */}
+          {/* Flash Deals & Announcement Bar Button */}
           <button
             onClick={() => setIsFlashSaleModalOpen(true)}
-            className="px-4 py-2.5 bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-black rounded-xl border border-amber-300 flex items-center gap-2 transition-all shadow-glow-yellow active:scale-95 cursor-pointer transform hover:-translate-y-0.5"
+            className="col-span-5 sm:col-auto px-2.5 sm:px-4 py-2.5 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 text-xs font-black rounded-xl border border-amber-300 flex items-center justify-center gap-1.5 sm:gap-2 transition-all shadow-xs shadow-amber-400/20 active:scale-95 cursor-pointer transform hover:-translate-y-0.5 text-center truncate"
           >
-            <FiClock className="w-4 h-4 text-slate-950" />
-            <span>⚡ Set Deals Timer</span>
+            <FiZap className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-950 fill-slate-950 shrink-0" />
+            <span className="truncate inline sm:hidden">Flash Sale</span>
+            <span className="truncate hidden sm:inline">Flash Sale & Promo Bar</span>
           </button>
 
-          {/* GREEN BUTTON: Add New Product */}
-          <button
-            onClick={() => setIsProductModalOpen(true)}
-            className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black rounded-xl shadow-glow-green border border-emerald-500 flex items-center gap-2 transition-all transform hover:-translate-y-0.5 active:scale-95 cursor-pointer"
+          {/* Create Product Button */}
+          <Link
+            to="/products/new"
+            className="col-span-5 sm:col-auto px-2.5 sm:px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-black rounded-xl shadow-xs shadow-emerald-500/20 border border-emerald-500 flex items-center justify-center gap-1.5 sm:gap-2 transition-all transform hover:-translate-y-0.5 active:scale-95 cursor-pointer text-center truncate"
           >
-            <FiPlus className="w-4 h-4 text-white" />
-            <span>Add New Product</span>
-          </button>
+            <FiPlus className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white stroke-[2.5] shrink-0" />
+            <span className="truncate inline sm:hidden">Add Product</span>
+            <span className="truncate hidden sm:inline">Add New Product</span>
+          </Link>
         </div>
       </div>
 
-      {/* KPI Cards Grid with Green, Orange, Blue, Yellow Themes */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      {/* KPI Cards Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
         <StatCard
           title="Total Gross Revenue"
           value={`₹${stats.totalRevenue?.toLocaleString('en-IN') || '0'}`}
           change="+18.4%"
           isPositive={true}
-          icon={<FiDollarSign className="w-5 h-5 text-emerald-600" />}
-          color="green"
+          icon={<span className="font-black text-sm">₹</span>}
+          color="emerald"
         />
         <StatCard
-          title="Total Orders Processed"
+          title="Orders Processed"
           value={stats.totalOrders || '0'}
           change="+12.2%"
           isPositive={true}
-          icon={<FiShoppingBag className="w-5 h-5 text-orange-600" />}
+          icon={<FiShoppingBag />}
           color="orange"
         />
         <StatCard
-          title="Active Catalog Items"
+          title="Active Products"
           value={stats.totalProducts || '0'}
-          change="+4 drops"
+          change="+4 new"
           isPositive={true}
-          icon={<FiBox className="w-5 h-5 text-blue-600" />}
+          icon={<FiBox />}
           color="blue"
         />
         <StatCard
@@ -137,8 +152,8 @@ export const DashboardPage = () => {
           value={stats.totalUsers || '0'}
           change="+24.8%"
           isPositive={true}
-          icon={<FiUsers className="w-5 h-5 text-amber-700" />}
-          color="yellow"
+          icon={<FiUsers />}
+          color="indigo"
         />
       </div>
 
@@ -168,13 +183,6 @@ export const DashboardPage = () => {
         onUpdated={fetchDashboardData}
       />
 
-      <ProductModal
-        isOpen={isProductModalOpen}
-        onClose={() => setIsProductModalOpen(false)}
-        categories={categories}
-        onSaved={fetchDashboardData}
-      />
-
       <FlashSaleModal
         isOpen={isFlashSaleModalOpen}
         onClose={() => setIsFlashSaleModalOpen(false)}
@@ -184,3 +192,5 @@ export const DashboardPage = () => {
     </div>
   );
 };
+
+export default DashboardPage;

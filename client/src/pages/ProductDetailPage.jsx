@@ -9,6 +9,7 @@ import { ProductCard } from '../components/ProductCard';
 import {
   FiStar,
   FiShoppingBag,
+  FiShoppingCart,
   FiHeart,
   FiTruck,
   FiShield,
@@ -20,7 +21,6 @@ import {
   FiPhone,
   FiMessageSquare,
 } from 'react-icons/fi';
-import { VendorContactModal } from '../components/VendorContactModal';
 import { formatPrice, formatDate } from '../utils/helpers';
 
 export const ProductDetailPage = () => {
@@ -158,8 +158,8 @@ export const ProductDetailPage = () => {
                   key={idx}
                   onClick={() => setSelectedImage(idx)}
                   className={`w-20 h-20 rounded-2xl overflow-hidden border-2 transition-all shrink-0 bg-white cursor-pointer ${selectedImage === idx
-                      ? 'border-[#0d9488] scale-95 shadow-md'
-                      : 'border-slate-200 opacity-70 hover:opacity-100'
+                    ? 'border-[#0d9488] scale-95 shadow-md'
+                    : 'border-slate-200 opacity-70 hover:opacity-100'
                     }`}
                 >
                   <img src={img} alt="" className="w-full h-full object-cover" />
@@ -249,14 +249,14 @@ export const ProductDetailPage = () => {
                 </button>
               </div>
 
-              {/* Add to Shopping Bag - Yellow Primary Button */}
+              {/* Add to Cart - Yellow Primary Button */}
               <button
                 onClick={() => addToCart(product, quantity)}
                 disabled={product.countInStock <= 0}
                 className="flex-1 py-3.5 bg-[#fae125] hover:bg-yellow-300 disabled:bg-slate-200 text-slate-950 font-black text-sm rounded-2xl shadow-md shadow-yellow-400/20 border border-yellow-400 flex items-center justify-center gap-2 transition-all transform active:scale-95 cursor-pointer"
               >
-                <FiShoppingBag className="w-5 h-5 text-slate-950" />
-                <span>Add to Shopping Bag</span>
+                <FiShoppingCart className="w-5 h-5 text-slate-950" />
+                <span>Add to Cart</span>
               </button>
 
               <button
@@ -310,13 +310,13 @@ export const ProductDetailPage = () => {
               </div>
             </div>
 
-            {/* Quick Contact & Chat with Seller button */}
+            {/* Quick Inquiry & Chat with Nexus Support Desk */}
             <button
-              onClick={() => setContactModalOpen(true)}
-              className="w-full py-2.5 px-4 bg-white hover:bg-amber-100/60 text-amber-900 border border-amber-300 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-2xs cursor-pointer"
+              onClick={() => navigate(`/support?productId=${product._id}`, { state: { product } })}
+              className="w-full py-2.5 px-4 bg-white hover:bg-teal-50 text-teal-900 border border-teal-300 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-2xs cursor-pointer"
             >
-              <FiMessageSquare className="w-3.5 h-3.5 text-amber-700" />
-              <span>Ask Seller a Question / Call Support</span>
+              <FiMessageSquare className="w-3.5 h-3.5 text-teal-700" />
+              <span>Ask Nexus Support / Product Inquiry</span>
             </button>
           </div>
 
@@ -349,8 +349,8 @@ export const ProductDetailPage = () => {
           <button
             onClick={() => setActiveTab('specs')}
             className={`pb-4 text-sm font-black transition-all relative cursor-pointer ${activeTab === 'specs'
-                ? 'text-[#0d9488] border-b-2 border-[#0d9488]'
-                : 'text-slate-400 hover:text-slate-700'
+              ? 'text-[#0d9488] border-b-2 border-[#0d9488]'
+              : 'text-slate-400 hover:text-slate-700'
               }`}
           >
             Technical Specifications
@@ -358,8 +358,8 @@ export const ProductDetailPage = () => {
           <button
             onClick={() => setActiveTab('reviews')}
             className={`pb-4 text-sm font-black transition-all relative cursor-pointer ${activeTab === 'reviews'
-                ? 'text-[#0d9488] border-b-2 border-[#0d9488]'
-                : 'text-slate-400 hover:text-slate-700'
+              ? 'text-[#0d9488] border-b-2 border-[#0d9488]'
+              : 'text-slate-400 hover:text-slate-700'
               }`}
           >
             Customer Reviews ({product.reviews?.length || 0})
@@ -495,21 +495,6 @@ export const ProductDetailPage = () => {
             ))}
           </div>
         </div>
-      )}
-
-      {/* Vendor Contact & Live Chat Modal */}
-      {product && (
-        <VendorContactModal
-          isOpen={contactModalOpen}
-          onClose={() => setContactModalOpen(false)}
-          vendor={
-            product.vendor || {
-              storeName: product.vendorStoreName || 'Nexus Merchant',
-              phone: '9876543210',
-            }
-          }
-          product={product}
-        />
       )}
 
     </div>

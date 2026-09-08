@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { FiUser, FiMail, FiPhone, FiMapPin, FiSave, FiLock, FiPackage } from 'react-icons/fi';
 
 export const ProfilePage = () => {
-  const { user, isAuthenticated, updateProfile } = useAuth();
+  const { user, isAuthenticated, loading: authLoading, updateProfile } = useAuth();
   const navigate = useNavigate();
 
   const [name, setName] = useState('');
@@ -19,6 +19,7 @@ export const ProfilePage = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (authLoading) return;
     if (!isAuthenticated) {
       navigate('/auth?redirect=profile');
       return;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FiX, FiStar, FiShoppingBag, FiHeart, FiShield, FiTruck } from 'react-icons/fi';
+import { FiX, FiStar, FiShoppingBag, FiShoppingCart, FiHeart, FiShield, FiTruck } from 'react-icons/fi';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { formatPrice } from '../utils/helpers';
@@ -46,7 +46,7 @@ export const QuickViewModal = ({ product, isOpen, onClose }) => {
       />
 
       {/* Small, Compact Floating Quick View Card (Centered on all screen sizes) */}
-      <div className="relative w-full max-w-[340px] sm:max-w-lg md:max-w-xl glass-modal rounded-3xl overflow-hidden z-10 animate-in zoom-in-95 duration-200 border-2 border-yellow-300 shadow-2xl m-auto">
+      <div className="relative w-full max-w-[340px] sm:max-w-lg md:max-w-xl glass-modal rounded-3xl overflow-hidden z-10 animate-in zoom-in-95 duration-200 border-2 border-yellow-300 shadow-2xl m-auto max-h-[90vh] overflow-y-auto">
 
         {/* Close button with high contrast & compact size */}
         <button
@@ -185,7 +185,7 @@ export const QuickViewModal = ({ product, isOpen, onClose }) => {
                     disabled={product.countInStock <= 0}
                     className="flex-1 py-2 px-3 bg-[#0d9488] hover:bg-teal-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-black text-xs rounded-xl shadow-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer active:scale-95"
                   >
-                    <FiShoppingBag className="w-3.5 h-3.5" />
+                    <FiShoppingCart className="w-3.5 h-3.5" />
                     <span>{product.countInStock <= 0 ? 'Out of Stock' : '+ Add to Cart'}</span>
                   </button>
 

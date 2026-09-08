@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FiHeart, FiShoppingBag, FiTrash2, FiArrowRight, FiLock } from 'react-icons/fi';
+import { FiHeart, FiShoppingBag, FiShoppingCart, FiTrash2, FiArrowRight, FiLock } from 'react-icons/fi';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -113,7 +113,7 @@ export const WishlistPage = () => {
               disabled={product.countInStock <= 0}
               className="w-full py-2.5 bg-brand-600 hover:bg-brand-700 disabled:bg-slate-200 text-white font-bold text-xs rounded-xl shadow-md flex items-center justify-center gap-2 transition-colors"
             >
-              <FiShoppingBag className="w-3.5 h-3.5" />
+              <FiShoppingCart className="w-3.5 h-3.5" />
               <span>{product.countInStock > 0 ? 'Move to Cart' : 'Out of Stock'}</span>
             </button>
           </div>

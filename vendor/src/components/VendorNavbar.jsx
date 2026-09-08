@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import {
   FiMenu,
@@ -9,7 +9,10 @@ import {
   FiShoppingBag,
   FiCheckCircle,
   FiAlertTriangle,
-  FiMessageSquare,
+  FiChevronDown,
+  FiPercent,
+  FiGrid,
+  FiSettings,
 } from 'react-icons/fi';
 import { useVendorAuth } from '../context/VendorAuthContext';
 import { useToast } from '../context/ToastContext';
@@ -19,6 +22,24 @@ export const VendorNavbar = ({ onToggleSidebar }) => {
   const { addToast } = useToast();
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  const notifRef = useRef(null);
+  const profileRef = useRef(null);
+
+  // Close dropdowns on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (notifRef.current && !notifRef.current.contains(e.target)) {
+        setShowNotifications(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setShowProfileMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     if (!socket || !vendor?._id) return;
@@ -98,30 +119,31 @@ export const VendorNavbar = ({ onToggleSidebar }) => {
   }, [socket, vendor?._id, addToast]);
 
   return (
-    <header className="glass-navbar sticky top-0 z-30 px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-4">
+    <header className="glass-navbar sticky top-0 z-30 px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3.5 flex items-center justify-between gap-2 sm:gap-4">
       {/* Left: Mobile Toggle & Brand */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         <button
           onClick={onToggleSidebar}
-          className="lg:hidden p-2 rounded-xl text-slate-600 hover:bg-orange-50 hover:text-orange-600 transition-colors cursor-pointer"
+          className="lg:hidden p-2 rounded-xl text-slate-700 bg-white/80 hover:bg-orange-50 hover:text-orange-600 border border-slate-200/80 transition-all cursor-pointer shadow-2xs shrink-0"
+          aria-label="Toggle navigation menu"
         >
           <FiMenu className="w-5 h-5" />
         </button>
 
-        <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-500 text-white flex items-center justify-center font-black shadow-md shadow-orange-500/20 group-hover:scale-105 transition-transform">
-            <FiShoppingBag className="w-5 h-5" />
+        <Link to="/" className="flex items-center gap-2 sm:gap-3 group min-w-0">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-gradient-to-br from-orange-500 to-amber-500 text-white flex items-center justify-center font-black shadow-md shadow-orange-500/20 group-hover:scale-105 transition-transform shrink-0">
+            <FiShoppingBag className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-extrabold text-sm sm:text-base text-slate-900 tracking-tight">
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="font-black text-xs sm:text-base text-slate-900 tracking-tight truncate max-w-[130px] xs:max-w-[170px] sm:max-w-xs">
                 {vendor?.storeName || 'Merchant Portal'}
               </span>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-orange-100 text-orange-700 border border-orange-200">
-                Vendor Hub
+              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-orange-100 text-orange-700 border border-orange-200 shrink-0">
+                Vendor
               </span>
             </div>
-            <p className="text-[11px] text-slate-500 font-medium truncate max-w-xs">
+            <p className="text-[10px] sm:text-[11px] text-slate-500 font-semibold truncate hidden xs:block max-w-[180px] sm:max-w-xs">
               {vendor?.name} &bull; Commission: {vendor?.commissionRate || 10}%
             </p>
           </div>
@@ -129,33 +151,26 @@ export const VendorNavbar = ({ onToggleSidebar }) => {
       </div>
 
       {/* Right Actions */}
-      <div className="flex items-center gap-2.5 sm:gap-3.5">
+      <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
         {/* Customer Store Link */}
         <a
           href="http://localhost:5173"
           target="_blank"
           rel="noopener noreferrer"
-          className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/70 hover:bg-white text-slate-700 hover:text-orange-600 border border-slate-200 text-xs font-bold transition-all shadow-2xs"
+          className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/80 hover:bg-white text-slate-700 hover:text-orange-600 border border-slate-200 text-xs font-bold transition-all shadow-2xs"
         >
           <span>Live Storefront</span>
           <FiExternalLink className="w-3.5 h-3.5 text-slate-400" />
         </a>
 
-        {/* Customer Inquiries / Chat Shortcut */}
-        <Link
-          to="/messages"
-          className="p-2.5 rounded-xl bg-white/80 hover:bg-teal-50 text-slate-700 hover:text-teal-700 border border-slate-200 transition-all relative cursor-pointer shadow-2xs flex items-center gap-1.5"
-          title="Customer Inquiries & Live Chat"
-        >
-          <FiMessageSquare className="w-4 h-4 text-teal-600" />
-          <span className="text-xs font-bold text-slate-800 hidden sm:inline">Messages</span>
-        </Link>
-
         {/* Real-Time Notifications Bell */}
-        <div className="relative">
+        <div className="relative" ref={notifRef}>
           <button
-            onClick={() => setShowNotifications(!showNotifications)}
-            className="p-2.5 rounded-xl bg-white/80 hover:bg-orange-50 text-slate-700 hover:text-orange-600 border border-slate-200 transition-all relative cursor-pointer shadow-2xs"
+            onClick={() => {
+              setShowNotifications(!showNotifications);
+              setShowProfileMenu(false);
+            }}
+            className="p-2 sm:p-2.5 rounded-xl bg-white/80 hover:bg-orange-50 text-slate-700 hover:text-orange-600 border border-slate-200/80 transition-all relative cursor-pointer shadow-2xs"
             title="Real-Time Order Notifications"
           >
             <FiBell className="w-4 h-4" />
@@ -168,13 +183,13 @@ export const VendorNavbar = ({ onToggleSidebar }) => {
 
           {/* Notifications Dropdown */}
           {showNotifications && (
-            <div className="absolute right-0 mt-2 w-80 sm:w-96 glass-card p-4 shadow-2xl z-50 animate-in fade-in zoom-in-95 space-y-3">
+            <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] max-w-xs sm:max-w-sm bg-white/95 backdrop-blur-md rounded-2xl border border-orange-200 p-3.5 shadow-2xl z-50 animate-in fade-in zoom-in-95 space-y-3">
               <div className="flex items-center justify-between pb-2 border-b border-orange-100">
-                <span className="text-xs font-extrabold text-slate-900">Live Order Alerts</span>
+                <span className="text-xs font-black text-slate-900">Live Order Alerts</span>
                 {notifications.length > 0 && (
                   <button
                     onClick={() => setNotifications([])}
-                    className="text-[10px] text-orange-600 hover:underline font-bold"
+                    className="text-[10px] text-orange-600 hover:underline font-bold cursor-pointer"
                   >
                     Clear All
                   </button>
@@ -202,20 +217,109 @@ export const VendorNavbar = ({ onToggleSidebar }) => {
           )}
         </div>
 
-        {/* Vendor Status Pill */}
-        <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border bg-emerald-50 text-emerald-800 border-emerald-200">
+        {/* Vendor Status Pill (Desktop) */}
+        <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border bg-emerald-50 text-emerald-800 border-emerald-200">
           <FiCheckCircle className="w-3.5 h-3.5 text-emerald-600" />
           <span>Active Merchant</span>
         </div>
 
-        {/* Logout */}
-        <button
-          onClick={logout}
-          className="p-2.5 rounded-xl bg-white/80 hover:bg-rose-50 text-slate-700 hover:text-rose-600 border border-slate-200 transition-all cursor-pointer shadow-2xs"
-          title="Sign Out"
-        >
-          <FiLogOut className="w-4 h-4" />
-        </button>
+        {/* Vendor Profile Dropdown (Mobile & Desktop) */}
+        <div className="relative" ref={profileRef}>
+          <button
+            onClick={() => {
+              setShowProfileMenu(!showProfileMenu);
+              setShowNotifications(false);
+            }}
+            className="flex items-center gap-1.5 sm:gap-2 p-1 sm:px-2.5 sm:py-1.5 rounded-xl bg-white/80 hover:bg-orange-50 border border-slate-200/80 transition-all cursor-pointer shadow-2xs"
+          >
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-orange-100 border border-orange-300 flex items-center justify-center text-orange-800 font-black text-xs shrink-0 overflow-hidden">
+              {vendor?.storeLogo ? (
+                <img src={vendor.storeLogo} alt={vendor.storeName} className="w-full h-full object-cover" />
+              ) : (
+                (vendor?.storeName?.[0] || 'V').toUpperCase()
+              )}
+            </div>
+            <div className="hidden sm:block text-left">
+              <div className="text-xs font-black text-slate-900 leading-tight truncate max-w-[100px]">
+                {vendor?.name || 'Vendor'}
+              </div>
+              <div className="text-[9px] font-bold text-slate-400 leading-tight">
+                {vendor?.storeName || 'Portal'}
+              </div>
+            </div>
+            <FiChevronDown
+              className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${
+                showProfileMenu ? 'rotate-180 text-orange-600' : ''
+              }`}
+            />
+          </button>
+
+          {/* Profile Menu Popover */}
+          {showProfileMenu && (
+            <div className="absolute right-0 mt-2 w-64 bg-white/95 backdrop-blur-md rounded-2xl border border-orange-200 p-3 shadow-2xl z-50 animate-in fade-in zoom-in-95 space-y-3">
+              {/* Profile Card Header */}
+              <div className="p-2.5 bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl border border-orange-200 space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-orange-500 text-white font-black text-xs flex items-center justify-center shrink-0">
+                    {(vendor?.storeName?.[0] || 'V').toUpperCase()}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-xs font-black text-slate-900 truncate">
+                      {vendor?.storeName || 'My Store'}
+                    </div>
+                    <div className="text-[10px] text-slate-500 font-semibold truncate">
+                      {vendor?.email}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-[10px] pt-1 border-t border-orange-200/60 text-slate-600 font-bold">
+                  <span>Commission Rate:</span>
+                  <span className="text-orange-700 font-black">{vendor?.commissionRate || 10}%</span>
+                </div>
+              </div>
+
+              {/* Quick Links */}
+              <div className="space-y-1">
+                <Link
+                  to="/profile"
+                  onClick={() => setShowProfileMenu(false)}
+                  className="flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
+                >
+                  <FiSettings className="w-3.5 h-3.5 text-slate-400" />
+                  <span>Store Settings</span>
+                </Link>
+
+                <a
+                  href="http://localhost:5173"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-orange-50 hover:text-orange-600 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <FiShoppingBag className="w-3.5 h-3.5 text-slate-400" />
+                    <span>View Storefront</span>
+                  </div>
+                  <FiExternalLink className="w-3 h-3 text-slate-400" />
+                </a>
+              </div>
+
+              {/* Sign Out Button */}
+              <div className="pt-2 border-t border-slate-100">
+                <button
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    logout();
+                  }}
+                  className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs rounded-xl transition-all cursor-pointer active:scale-95"
+                >
+                  <FiLogOut className="w-3.5 h-3.5" />
+                  <span>Sign Out</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );

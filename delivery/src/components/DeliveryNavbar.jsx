@@ -97,7 +97,7 @@ export const DeliveryNavbar = () => {
                 title="Toggle Duty Status"
               >
                 <span className={`w-2.5 h-2.5 rounded-full ${isOnline ? 'bg-white shadow-xs animate-ping' : 'bg-slate-500'}`} />
-                <span className="tracking-wide">{isOnline ? 'ON DUTY' : 'OFFLINE'}</span>
+                <span className="tracking-wide">{isOnline ? 'ONLINE' : 'OFFLINE'}</span>
               </button>
 
               {/* Logout Button */}

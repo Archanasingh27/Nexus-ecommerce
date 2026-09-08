@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
-import { CategoryModal } from '../components/CategoryModal';
 import { useToast } from '../context/ToastContext';
 import {
   FiPlus,
@@ -32,12 +32,10 @@ const iconMap = {
 };
 
 export const CategoriesPage = () => {
+  const navigate = useNavigate();
   const { addToast } = useToast();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const [editingCategory, setEditingCategory] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchCategories = async () => {
     setLoading(true);
@@ -93,10 +91,7 @@ export const CategoriesPage = () => {
 
           {/* GREEN BUTTON: Create New Category */}
           <button
-            onClick={() => {
-              setEditingCategory(null);
-              setIsModalOpen(true);
-            }}
+            onClick={() => navigate('/categories/new')}
             className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black rounded-xl shadow-md shadow-emerald-500/25 border border-emerald-500 flex items-center gap-2 transition-all transform hover:-translate-y-0.5 cursor-pointer"
           >
             <FiPlus className="w-4 h-4 text-white" />
@@ -154,10 +149,7 @@ export const CategoriesPage = () => {
                   <div className="flex items-center gap-1.5">
                     {/* YELLOW BUTTON: Edit */}
                     <button
-                      onClick={() => {
-                        setEditingCategory(cat);
-                        setIsModalOpen(true);
-                      }}
+                      onClick={() => navigate(`/categories/edit/${cat._id}`)}
                       className="p-1.5 bg-amber-400 hover:bg-amber-500 text-slate-950 rounded-lg transition-all border border-amber-300 cursor-pointer shadow-2xs"
                       title="Edit Category"
                     >
@@ -179,13 +171,6 @@ export const CategoriesPage = () => {
           ))
         )}
       </div>
-
-      <CategoryModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        category={editingCategory}
-        onSaved={fetchCategories}
-      />
 
     </div>
   );

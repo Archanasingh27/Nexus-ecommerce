@@ -25,6 +25,7 @@ import {
 import api from '../api/axios';
 import { useVendorAuth } from '../context/VendorAuthContext';
 import { useToast } from '../context/ToastContext';
+import { StatCard } from '../components/StatCard';
 
 export const VendorDashboardPage = () => {
   const { vendor } = useVendorAuth();
@@ -33,11 +34,14 @@ export const VendorDashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [metric, setMetric] = useState('revenue'); // 'revenue' | 'orders'
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = async (showToast = false) => {
     setLoading(true);
     try {
       const res = await api.get('/vendor/dashboard/stats');
       setStats(res.data.stats);
+      if (showToast) {
+        addToast('Store metrics & live telemetry refreshed!', 'success');
+      }
     } catch (err) {
       console.error('Failed to load vendor dashboard:', err);
       addToast('Failed to load store analytics', 'error');
@@ -47,7 +51,7 @@ export const VendorDashboardPage = () => {
   };
 
   useEffect(() => {
-    fetchDashboardData();
+    fetchDashboardData(false);
   }, []);
 
   const chartData = stats?.dailySales?.length > 0 ? stats.dailySales : [
@@ -74,111 +78,67 @@ export const VendorDashboardPage = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-3 flex-wrap">
+        {/* Quick Action Buttons */}
+        <div className="grid grid-cols-12 gap-2 w-full sm:w-auto sm:flex sm:items-center sm:gap-2.5">
+          {/* Refresh Button */}
           <button
-            onClick={fetchDashboardData}
-            className="p-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl border border-blue-500 transition-all shadow-glow-blue cursor-pointer active:scale-95"
+            onClick={() => fetchDashboardData(true)}
+            className="col-span-3 sm:col-auto p-2.5 bg-white hover:bg-slate-50 text-slate-700 rounded-xl border border-slate-200 flex items-center justify-center transition-all shadow-2xs cursor-pointer active:scale-95"
             title="Refresh Real-Time Metrics"
           >
-            <FiRefreshCw className={`w-4 h-4 text-white ${loading ? 'animate-spin' : ''}`} />
+            <FiRefreshCw className={`w-4 h-4 text-slate-600 ${loading ? 'animate-spin' : ''}`} />
           </button>
 
+          {/* Add Catalog Item Button */}
           <Link
-            to="/orders"
-            className="px-4 py-2.5 bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-black rounded-xl border border-amber-300 flex items-center gap-2 transition-all shadow-glow-yellow active:scale-95 cursor-pointer transform hover:-translate-y-0.5"
+            to="/products/new"
+            className="col-span-9 sm:col-auto px-3 sm:px-4 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-xs font-black rounded-xl shadow-md shadow-orange-500/20 border border-orange-400 flex items-center justify-center gap-1.5 sm:gap-2 transition-all transform hover:-translate-y-0.5 active:scale-95 cursor-pointer text-center truncate"
           >
-            <FiClock className="w-4 h-4 text-slate-950" />
-            <span>⚡ Fulfill Orders ({(stats?.pendingOrdersCount || 0) + (stats?.confirmedOrdersCount || 0)})</span>
-          </Link>
-
-          <Link
-            to="/products"
-            className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black rounded-xl shadow-glow-green border border-emerald-500 flex items-center gap-2 transition-all transform hover:-translate-y-0.5 active:scale-95 cursor-pointer"
-          >
-            <FiPlus className="w-4 h-4 text-white" />
-            <span>Add Catalog Item</span>
+            <FiPlus className="w-4 h-4 text-white shrink-0" />
+            <span className="truncate inline sm:hidden">Add Catalog Item</span>
+            <span className="truncate hidden sm:inline">Add New Catalog Item</span>
           </Link>
         </div>
       </div>
 
-      {/* 2. Executive KPI Cards Grid (Green, Orange, Blue, Yellow Themes matching Admin) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        {/* GREEN CARD: Total Net Revenue */}
-        <div className="glass-card p-5 sm:p-6 space-y-4 hover:border-emerald-300 transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-black uppercase tracking-wider text-slate-400">Net Merchant Earnings</span>
-            <div className="w-10 h-10 rounded-2xl bg-emerald-100/90 text-emerald-700 flex items-center justify-center font-black border border-emerald-200 shadow-2xs">
-              <FiDollarSign className="w-5 h-5 stroke-[2.5]" />
-            </div>
-          </div>
-          <div>
-            <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono">
-              ₹{stats?.totalRevenue?.toLocaleString('en-IN') || 0}
-            </div>
-            <div className="flex items-center gap-1.5 text-xs text-emerald-700 font-bold mt-1">
-              <span>+18.4% this month</span>
-              <span className="text-slate-400 font-medium">• {stats?.commissionRate || 10}% fee</span>
-            </div>
-          </div>
-        </div>
-
-        {/* ORANGE CARD: Total Orders */}
-        <div className="glass-card p-5 sm:p-6 space-y-4 hover:border-orange-300 transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-black uppercase tracking-wider text-slate-400">Total Store Orders</span>
-            <div className="w-10 h-10 rounded-2xl bg-orange-100/90 text-orange-700 flex items-center justify-center font-black border border-orange-200 shadow-2xs">
-              <FiShoppingBag className="w-5 h-5 stroke-[2.5]" />
-            </div>
-          </div>
-          <div>
-            <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono">
-              {stats?.totalOrders || 0}
-            </div>
-            <div className="flex items-center gap-1.5 text-xs text-orange-700 font-bold mt-1">
-              <span>+12.2% volume</span>
-              <span className="text-slate-400 font-medium">• {stats?.completedOrdersCount || 0} delivered</span>
-            </div>
-          </div>
-        </div>
-
-        {/* BLUE CARD: Active Catalog Items */}
-        <div className="glass-card p-5 sm:p-6 space-y-4 hover:border-blue-300 transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-black uppercase tracking-wider text-slate-400">Active Catalog Items</span>
-            <div className="w-10 h-10 rounded-2xl bg-blue-100/90 text-blue-700 flex items-center justify-center font-black border border-blue-200 shadow-2xs">
-              <FiBox className="w-5 h-5 stroke-[2.5]" />
-            </div>
-          </div>
-          <div>
-            <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono">
-              {stats?.productsCount || 0}
-            </div>
-            <div className="flex items-center gap-1.5 text-xs text-blue-700 font-bold mt-1">
-              <span>{stats?.totalStockUnits || 0} physical units</span>
-              <span className="text-slate-400 font-medium">• {stats?.inStockCount || 0} in stock</span>
-            </div>
-          </div>
-        </div>
-
-        {/* YELLOW CARD: Customer Satisfaction & Rating */}
-        <div className="glass-card p-5 sm:p-6 space-y-4 hover:border-amber-300 transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-black uppercase tracking-wider text-slate-400">Store Satisfaction</span>
-            <div className="w-10 h-10 rounded-2xl bg-amber-100/90 text-amber-700 flex items-center justify-center font-black border border-amber-200 shadow-2xs">
-              <FiStar className="w-5 h-5 stroke-[2.5] fill-amber-400 text-amber-500" />
-            </div>
-          </div>
-          <div>
-            <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono flex items-center gap-1.5">
-              <span>{stats?.averageRating || 4.9}</span>
-              <span className="text-sm text-slate-400 font-medium">/ 5.0</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-xs text-amber-800 font-bold mt-1">
-              <span>{stats?.totalReviewsCount || 0} verified reviews</span>
-              <span className="text-slate-400 font-medium">• 99.4% on-time</span>
-            </div>
-          </div>
-        </div>
+      {/* 2. Executive KPI Cards Grid (Compact 2-col on Mobile) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-5">
+        <StatCard
+          title="Net Merchant Earnings"
+          value={`₹${stats?.totalRevenue?.toLocaleString('en-IN') || 0}`}
+          change="+18.4%"
+          subtitle={`this month • ${stats?.commissionRate || 10}% fee`}
+          isPositive={true}
+          icon={<span className="font-black text-sm">₹</span>}
+          color="emerald"
+        />
+        <StatCard
+          title="Total Store Orders"
+          value={stats?.totalOrders || 0}
+          change="+12.2%"
+          subtitle={`volume • ${stats?.completedOrdersCount || 0} delivered`}
+          isPositive={true}
+          icon={<FiShoppingBag />}
+          color="orange"
+        />
+        <StatCard
+          title="Active Products"
+          value={stats?.productsCount || 0}
+          change={`${stats?.totalStockUnits || 0} units`}
+          subtitle={`${stats?.inStockCount || 0} in stock`}
+          isPositive={true}
+          icon={<FiBox />}
+          color="blue"
+        />
+        <StatCard
+          title="Store Satisfaction"
+          value={`${stats?.averageRating || 4.9} / 5.0`}
+          change={`${stats?.totalReviewsCount || 0} reviews`}
+          subtitle="99.4% on-time"
+          isPositive={true}
+          icon={<FiStar className="fill-amber-400 text-amber-500" />}
+          color="amber"
+        />
       </div>
 
       {/* 3. Revenue & Sales Volume Trend Graph (matching Admin RevenueChart) */}
@@ -395,7 +355,7 @@ export const VendorDashboardPage = () => {
               <thead>
                 <tr className="border-b border-orange-100 text-[10px] font-black uppercase tracking-wider text-slate-400">
                   <th className="pb-3 px-2">Order #</th>
-                  <th className="pb-3 px-2">Customer Destination</th>
+                  <th className="pb-3 px-2">Buyer & Destination</th>
                   <th className="pb-3 px-2">Order Total</th>
                   <th className="pb-3 px-2">Payment Mode</th>
                   <th className="pb-3 px-2">Milestone Status</th>
@@ -409,8 +369,12 @@ export const VendorDashboardPage = () => {
                       #{ord.orderNumber}
                     </td>
                     <td className="py-3 px-2 text-slate-700">
-                      <div className="font-bold text-slate-800">{ord.shippingAddress?.fullName || 'Customer'}</div>
-                      <div className="text-[10px] text-slate-400">{ord.shippingAddress?.city || 'Indore'}</div>
+                      <div className="font-bold text-slate-900 text-xs">
+                        {ord.shippingAddress?.fullName || ord.user?.name || 'Customer'}
+                      </div>
+                      <div className="text-[10px] text-slate-500 truncate max-w-[180px]">
+                        📍 {ord.shippingAddress?.street ? `${ord.shippingAddress.street}, ` : ''}{ord.shippingAddress?.city || 'Indore'} ({ord.shippingAddress?.postalCode || '452xxx'})
+                      </div>
                     </td>
                     <td className="py-3 px-2 font-mono font-black text-slate-900">
                       ₹{ord.totalPrice?.toLocaleString('en-IN')}

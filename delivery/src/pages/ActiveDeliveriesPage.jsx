@@ -237,11 +237,21 @@ export const ActiveDeliveriesPage = () => {
                     <span>Store Pickups ({(order.vendors && order.vendors.length > 0) ? order.vendors.length : 1} Stop{(order.vendors && order.vendors.length > 1) ? 's' : ''})</span>
                   </div>
 
-                  {((order.vendors && order.vendors.length > 0) ? order.vendors : [{
-                    storeName: order.orderItems?.[0]?.vendorStoreName || 'Nexus Central Hub',
-                    vendorPhone: '',
-                    vendorAddress: { street: 'Plot 18, Commercial Hub, Scheme 54', city: 'Indore' }
-                  }]).map((vStop, vIdx) => {
+                  {(
+                    order.vendorStoreName
+                      ? [{
+                          storeName: order.vendorStoreName,
+                          vendorPhone: order.vendor?.phone || '',
+                          vendorAddress: order.vendorAddress || { street: 'Plot 18, Commercial Hub, Scheme 54', city: 'Indore' },
+                        }]
+                      : order.vendors && order.vendors.length > 0
+                      ? order.vendors
+                      : [{
+                          storeName: order.orderItems?.[0]?.vendorStoreName || 'Nexus Central Hub',
+                          vendorPhone: '',
+                          vendorAddress: { street: 'Plot 18, Commercial Hub, Scheme 54', city: 'Indore' },
+                        }]
+                  ).map((vStop, vIdx) => {
                     const vAddr = vStop.vendorAddress || vStop.vendor?.address || { street: 'Plot 18, Commercial Hub, Scheme 54', city: 'Indore' };
                     const vFullAddr = `${vAddr.street || 'Plot 18, Scheme 54'}, ${vAddr.city || 'Indore'}`;
                     const vPhone = vStop.vendorPhone || vStop.vendor?.phone || '';

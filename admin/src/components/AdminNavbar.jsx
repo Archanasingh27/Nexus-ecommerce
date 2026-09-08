@@ -128,27 +128,29 @@ export const AdminNavbar = ({ onToggleSidebar }) => {
     <header className="sticky top-0 z-30 glass-nav px-4 sm:px-6 py-3 flex items-center justify-between text-slate-900 transition-all">
 
       {/* Left: Mobile Toggle & Brand */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 sm:gap-3.5">
         <button
           onClick={onToggleSidebar}
-          className="lg:hidden p-2 text-slate-700 hover:bg-orange-100/60 rounded-xl transition-colors cursor-pointer"
+          className="lg:hidden p-2 -ml-1 text-slate-700 hover:bg-orange-100/70 hover:text-orange-600 rounded-xl transition-all cursor-pointer shrink-0 active:scale-95"
+          aria-label="Open sidebar menu"
         >
           <FiMenu className="w-5 h-5" />
         </button>
 
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-sky-100 flex items-center justify-center border border-sky-300 shadow-sm">
-            <FiShield className="w-5 h-5 text-[#78350f]" />
+        <Link to="/" className="flex items-center gap-2 sm:gap-2.5 group">
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-orange-500 to-amber-500 text-white flex items-center justify-center shadow-md shadow-orange-500/25 shrink-0 border border-orange-400/40 group-hover:scale-105 transition-transform">
+            <FiShield className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
           </div>
-          <div>
-            <div className="text-base font-black tracking-tight flex items-center gap-2">
-              <span className="text-[#78350f]">NEXUS</span>
-              <span className="text-[10px] bg-gradient-to-r from-orange-500 to-amber-500 text-white font-black px-2.5 py-0.5 rounded-full shadow-xs">
-                ADMIN COMMAND
-              </span>
-            </div>
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span className="text-sm sm:text-base font-black tracking-tight text-slate-900 group-hover:text-orange-600 transition-colors">
+              NEXUS
+            </span>
+            <span className="text-[9px] sm:text-[10px] bg-gradient-to-r from-orange-500 to-amber-500 text-white font-extrabold sm:font-black px-2 sm:px-2.5 py-0.5 rounded-full shadow-2xs uppercase tracking-wider whitespace-nowrap">
+              <span className="inline sm:hidden">ADMIN</span>
+              <span className="hidden sm:inline">ADMIN COMMAND</span>
+            </span>
           </div>
-        </div>
+        </Link>
       </div>
 
       {/* Center Search Bar */}

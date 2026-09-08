@@ -7,7 +7,7 @@
     background-color: #eaf6f6;
     color: #0f172a;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-    background-image: 
+    background-image:
       radial-gradient(at 10% 15%, rgba(204, 251, 241, 0.8) 0px, transparent 50%),
       radial-gradient(at 90% 10%, rgba(254, 249, 195, 0.65) 0px, transparent 50%),
       radial-gradient(at 50% 50%, rgba(240, 253, 250, 0.9) 0px, transparent 60%),
@@ -28,13 +28,16 @@
   width: 8px;
   height: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: #e5f3f3;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #99f6e4;
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: #0d9488;
 }
@@ -167,6 +170,7 @@
   position: relative;
   border-radius: 1.25rem;
 }
+
 .gradient-border::before {
   content: '';
   position: absolute;
@@ -185,6 +189,7 @@
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;

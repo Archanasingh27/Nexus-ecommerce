@@ -350,10 +350,10 @@ export const AdvertisementModal = ({ isOpen, onClose, onSaved, adToEdit = null }
                 onChange={(e) => setPlacement(e.target.value)}
                 className="w-full bg-slate-50 border border-slate-200 text-xs text-slate-900 font-bold rounded-xl py-2.5 px-3 outline-none focus:border-[#0d9488] cursor-pointer"
               >
-                <option value="category_feed">Category Feed (After Every Category)</option>
-                <option value="promo_banner">Promotional Banner (Mid-Page Showcase)</option>
-                <option value="hero_slide">Hero Slider / Carousel</option>
-                <option value="global_bar">Global Announcement Bar</option>
+                <option value="hero_slide">⭐ Hero Slider / Carousel (Top of Home Page)</option>
+                <option value="category_feed">📦 Category Feed (After Every Category)</option>
+                <option value="promo_banner">⚡ Promotional Banner (Mid-Page Showcase)</option>
+                <option value="global_bar">📢 Global Announcement Bar</option>
               </select>
             </div>
 

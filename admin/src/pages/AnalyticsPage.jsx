@@ -157,55 +157,55 @@ export const AnalyticsPage = () => {
       </div>
 
       {/* KPI Highlight Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <div className="bg-white border border-amber-200/80 p-5 rounded-3xl space-y-2 relative overflow-hidden shadow-md hover:border-yellow-500 hover:shadow-lg hover:shadow-yellow-500/10 transition-all">
-          <div className="flex justify-between items-center text-slate-500">
-            <span className="text-xs font-extrabold uppercase tracking-wider">Gross Sales</span>
-            <div className="w-8 h-8 rounded-xl bg-yellow-400 text-black border border-amber-500 flex items-center justify-center font-black shadow-xs">
-              <FiDollarSign className="w-4 h-4 text-black" />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6">
+        <div className="bg-white border border-amber-200/80 p-3 sm:p-5 rounded-2xl sm:rounded-3xl space-y-1 sm:space-y-2 relative overflow-hidden shadow-xs sm:shadow-md hover:border-yellow-500 hover:shadow-lg transition-all">
+          <div className="flex justify-between items-center text-slate-500 gap-1">
+            <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider truncate">Gross Sales</span>
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-yellow-400 text-black border border-amber-500 flex items-center justify-center font-black shadow-2xs shrink-0">
+              <FiDollarSign className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black" />
             </div>
           </div>
-          <div className="text-2xl font-black text-dark-900">₹{totalRevenue.toLocaleString('en-IN')}</div>
-          <div className="flex items-center gap-1 text-[11px] font-black text-amber-900 bg-yellow-400/20 px-2 py-0.5 rounded-full border border-amber-400 w-fit">
-            <FiTrendingUp className="w-3.5 h-3.5" />
-            <span>+18.4% vs last period</span>
+          <div className="text-base sm:text-2xl font-black text-dark-900 truncate">₹{totalRevenue.toLocaleString('en-IN')}</div>
+          <div className="flex items-center gap-1 text-[9px] sm:text-[11px] font-black text-amber-900 bg-yellow-400/20 px-1.5 sm:px-2 py-0.5 rounded-full border border-amber-400 w-fit truncate">
+            <FiTrendingUp className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 shrink-0" />
+            <span className="truncate">+18.4% vs last mo</span>
           </div>
         </div>
 
-        <div className="bg-white border border-amber-200/80 p-5 rounded-3xl space-y-2 relative overflow-hidden shadow-md hover:border-yellow-500 hover:shadow-lg hover:shadow-yellow-500/10 transition-all">
-          <div className="flex justify-between items-center text-slate-500">
-            <span className="text-xs font-extrabold uppercase tracking-wider">Total Orders</span>
-            <div className="w-8 h-8 rounded-xl bg-amber-400 text-black border border-amber-500 flex items-center justify-center font-black shadow-xs">
-              <FiShoppingBag className="w-4 h-4 text-black" />
+        <div className="bg-white border border-amber-200/80 p-3 sm:p-5 rounded-2xl sm:rounded-3xl space-y-1 sm:space-y-2 relative overflow-hidden shadow-xs sm:shadow-md hover:border-yellow-500 hover:shadow-lg transition-all">
+          <div className="flex justify-between items-center text-slate-500 gap-1">
+            <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider truncate">Total Orders</span>
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-amber-400 text-black border border-amber-500 flex items-center justify-center font-black shadow-2xs shrink-0">
+              <FiShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black" />
             </div>
           </div>
-          <div className="text-2xl font-black text-dark-900">{totalOrders}</div>
-          <div className="flex items-center gap-1 text-[11px] font-black text-amber-900 bg-yellow-400/20 px-2 py-0.5 rounded-full border border-amber-400 w-fit">
-            <FiTrendingUp className="w-3.5 h-3.5" />
-            <span>+12.2% growth rate</span>
+          <div className="text-base sm:text-2xl font-black text-dark-900 truncate">{totalOrders}</div>
+          <div className="flex items-center gap-1 text-[9px] sm:text-[11px] font-black text-amber-900 bg-yellow-400/20 px-1.5 sm:px-2 py-0.5 rounded-full border border-amber-400 w-fit truncate">
+            <FiTrendingUp className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 shrink-0" />
+            <span className="truncate">+12.2% growth</span>
           </div>
         </div>
 
-        <div className="bg-white border border-amber-200/80 p-5 rounded-3xl space-y-2 relative overflow-hidden shadow-md hover:border-yellow-500 hover:shadow-lg hover:shadow-yellow-500/10 transition-all">
-          <div className="flex justify-between items-center text-slate-500">
-            <span className="text-xs font-extrabold uppercase tracking-wider">Average Order Value</span>
-            <div className="w-8 h-8 rounded-xl bg-yellow-300 text-black border border-yellow-400 flex items-center justify-center font-black shadow-xs">
-              <FiArrowUpRight className="w-4 h-4 text-black" />
+        <div className="bg-white border border-amber-200/80 p-3 sm:p-5 rounded-2xl sm:rounded-3xl space-y-1 sm:space-y-2 relative overflow-hidden shadow-xs sm:shadow-md hover:border-yellow-500 hover:shadow-lg transition-all">
+          <div className="flex justify-between items-center text-slate-500 gap-1">
+            <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider truncate">Avg Order</span>
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-yellow-300 text-black border border-yellow-400 flex items-center justify-center font-black shadow-2xs shrink-0">
+              <FiArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black" />
             </div>
           </div>
-          <div className="text-2xl font-black text-dark-900">₹{avgOrderValue.toLocaleString('en-IN')}</div>
-          <div className="text-[11px] font-bold text-slate-500">Per customer checkout</div>
+          <div className="text-base sm:text-2xl font-black text-dark-900 truncate">₹{avgOrderValue.toLocaleString('en-IN')}</div>
+          <div className="text-[9px] sm:text-[11px] font-bold text-slate-500 truncate">Per checkout</div>
         </div>
 
-        <div className="bg-white border border-amber-200/80 p-5 rounded-3xl space-y-2 relative overflow-hidden shadow-md hover:border-yellow-500 hover:shadow-lg hover:shadow-yellow-500/10 transition-all">
-          <div className="flex justify-between items-center text-slate-500">
-            <span className="text-xs font-extrabold uppercase tracking-wider">Category Portfolios</span>
-            <div className="w-8 h-8 rounded-xl bg-amber-300 text-black border border-amber-400 flex items-center justify-center font-black shadow-xs">
-              <FiLayers className="w-4 h-4 text-black" />
+        <div className="bg-white border border-amber-200/80 p-3 sm:p-5 rounded-2xl sm:rounded-3xl space-y-1 sm:space-y-2 relative overflow-hidden shadow-xs sm:shadow-md hover:border-yellow-500 hover:shadow-lg transition-all">
+          <div className="flex justify-between items-center text-slate-500 gap-1">
+            <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider truncate">Categories</span>
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-amber-300 text-black border border-amber-400 flex items-center justify-center font-black shadow-2xs shrink-0">
+              <FiLayers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black" />
             </div>
           </div>
-          <div className="text-2xl font-black text-dark-900">{categoryStats.length}</div>
-          <div className="text-[11px] font-extrabold text-amber-900">Active catalog genres</div>
+          <div className="text-base sm:text-2xl font-black text-dark-900 truncate">{categoryStats.length}</div>
+          <div className="text-[9px] sm:text-[11px] font-extrabold text-amber-900 truncate">Active genres</div>
         </div>
       </div>
 

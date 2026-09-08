@@ -21,11 +21,10 @@ import {
   FiMessageSquare,
   FiShoppingBag,
 } from 'react-icons/fi';
-import { VendorContactModal } from '../components/VendorContactModal';
 import { formatPrice, formatDate } from '../utils/helpers';
 
 export const OrdersPage = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
 
@@ -49,11 +48,8 @@ export const OrdersPage = () => {
   const [returnComments, setReturnComments] = useState('');
   const [submittingReturn, setSubmittingReturn] = useState(false);
 
-  // Vendor Contact Modal States
-  const [contactModalOpen, setContactModalOpen] = useState(false);
-  const [contactVendor, setContactVendor] = useState(null);
-
   useEffect(() => {
+    if (authLoading) return;
     if (!isAuthenticated) {
       navigate('/auth?redirect=orders');
       return;
@@ -266,55 +262,14 @@ export const OrdersPage = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-6 sm:space-y-8">
 
-      {/* Header & KPI Summary Banner */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center">
-                <FiPackage className="w-5 h-5" />
-              </div>
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                  My Orders
-                </h1>
-                <p className="text-xs text-slate-500 font-medium">
-                  Har ek product ko click karke uska status aur details dekhein.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <Link
-            to="/shop"
-            className="px-5 py-2.5 bg-[#fae125] hover:bg-yellow-300 text-black font-black text-xs rounded-xl shadow-xs border border-yellow-400 self-start sm:self-auto transition-all"
-          >
-            + New Purchase
-          </Link>
+      {/* Page Title Header */}
+      <div className="flex items-center gap-2.5">
+        <div className="w-8 h-8 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center shrink-0 shadow-2xs">
+          <FiPackage className="w-4 h-4" />
         </div>
-
-        {/* 4 Metric KPI Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 pt-2">
-          <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Products</div>
-            <div className="text-xl sm:text-2xl font-black text-slate-900 mt-1">{allOrderedItems.length}</div>
-          </div>
-
-          <div className="p-4 bg-blue-50/70 rounded-2xl border border-blue-200">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-blue-700">⚡ In-Transit</div>
-            <div className="text-xl sm:text-2xl font-black text-blue-900 mt-1">{activeCount}</div>
-          </div>
-
-          <div className="p-4 bg-emerald-50/70 rounded-2xl border border-emerald-200">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">✅ Delivered</div>
-            <div className="text-xl sm:text-2xl font-black text-emerald-900 mt-1">{deliveredCount}</div>
-          </div>
-
-          <div className="p-4 bg-amber-50/70 rounded-2xl border border-amber-200">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">💳 Total Spent</div>
-            <div className="text-lg sm:text-xl font-black text-amber-900 mt-1">{formatPrice(totalSpent)}</div>
-          </div>
-        </div>
+        <h1 className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight">
+          My Orders
+        </h1>
       </div>
 
       {/* Filter Tabs & Search Bar */}
@@ -470,7 +425,7 @@ export const OrdersPage = () => {
 
         {/* Right Product Dedicated Status Details & Timeline (7 cols) */}
         {selectedItem && selectedOrder ? (
-          <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6 sticky top-28">
+          <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6 lg:sticky lg:top-28">
 
             {/* Selected Product Banner Header */}
             <div className="p-4 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white rounded-3xl shadow-xs space-y-4">
@@ -496,23 +451,6 @@ export const OrdersPage = () => {
                       </span>
                     </div>
                   </div>
-                </div>
-
-                <div className="flex items-center gap-2 shrink-0">
-                  <button
-                    onClick={() => {
-                      setContactVendor({
-                        _id: selectedItem.vendorId,
-                        storeName: selectedItem.vendorStoreName,
-                        vendorPhone: selectedItem.vendorPhone,
-                      });
-                      setContactModalOpen(true);
-                    }}
-                    className="px-3 py-1.5 bg-teal-500 hover:bg-teal-400 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
-                  >
-                    <FiMessageSquare className="w-3.5 h-3.5" />
-                    <span>Chat Seller</span>
-                  </button>
                 </div>
               </div>
             </div>
@@ -578,25 +516,22 @@ export const OrdersPage = () => {
 
               <div className="flex items-center gap-2">
                 <a
-                  href={`tel:+91${(selectedItem.vendorPhone || '9876543210').replace(/\D/g, '')}`}
+                  href="tel:18004196398"
                   className="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold flex items-center gap-1 shadow-2xs"
                 >
                   <FiPhone className="w-3 h-3 text-slate-500" />
-                  <span>Call Store</span>
+                  <span>Call Office</span>
                 </a>
                 <button
                   onClick={() => {
-                    setContactVendor({
-                      _id: selectedItem.vendorId,
-                      storeName: selectedItem.vendorStoreName,
-                      vendorPhone: selectedItem.vendorPhone,
+                    navigate(`/support?orderId=${selectedOrder._id}`, {
+                      state: { order: selectedOrder, product: selectedItem?.item },
                     });
-                    setContactModalOpen(true);
                   }}
-                  className="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold flex items-center gap-1 shadow-2xs"
+                  className="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold flex items-center gap-1 shadow-2xs cursor-pointer"
                 >
                   <FiMessageSquare className="w-3 h-3" />
-                  <span>Chat</span>
+                  <span>Chat Support</span>
                 </button>
               </div>
             </div>
@@ -738,6 +673,17 @@ export const OrdersPage = () => {
 
             {/* Tracking Bar */}
             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-500 font-bold">Delivery Speed:</span>
+                <span className="inline-flex items-center gap-1 font-bold text-orange-700 bg-orange-100/90 px-2 py-0.5 rounded-lg border border-orange-200 text-[11px]">
+                  {selectedOrder.deliveryOptionName ||
+                    (selectedOrder.deliveryOption === 'instant'
+                      ? '⚡ Instant Delivery (30-45 mins)'
+                      : selectedOrder.deliveryOption === 'nextday'
+                      ? '🚚 Next Day Delivery'
+                      : '🕒 4-Hour Express')}
+                </span>
+              </div>
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-500 font-bold">Airway Tracking Number:</span>
                 <span className="font-mono font-bold text-brand-600">{selectedOrder.trackingNumber || 'TRK-ASSIGNING'}</span>
@@ -976,27 +922,6 @@ export const OrdersPage = () => {
             </form>
           </div>
         </div>
-      )}
-
-      {/* Vendor Contact / Live Chat Modal */}
-      {selectedOrder && (
-        <VendorContactModal
-          isOpen={contactModalOpen}
-          onClose={() => setContactModalOpen(false)}
-          vendor={
-            contactVendor ||
-            (selectedItem && {
-              _id: selectedItem.vendorId,
-              storeName: selectedItem.vendorStoreName,
-              vendorPhone: selectedItem.vendorPhone,
-            }) || {
-              storeName: 'Store Vendor',
-              phone: '9876543210',
-            }
-          }
-          order={selectedOrder}
-          product={selectedItem?.item}
-        />
       )}
 
     </div>

@@ -1,5 +1,6 @@
 import Order from '../models/Order.js';
 import Product from '../models/Product.js';
+import Setting from '../models/Setting.js';
 import Razorpay from 'razorpay';
 import crypto from 'crypto';
 
@@ -17,6 +18,9 @@ export const createOrder = async (req, res) => {
       shippingPrice,
       discountPrice,
       totalPrice,
+      deliveryOption = '4hour',
+      deliveryOptionName = '4-Hour Delivery',
+      estimatedDeliveryTime = 'Within 4 Hours',
     } = req.body;
 
     if (!orderItems || orderItems.length === 0) {
@@ -89,29 +93,79 @@ export const createOrder = async (req, res) => {
       }
     }
 
-    // Generate unique order number
-    const orderNumber = 'NX-' + Math.floor(100000 + Math.random() * 900000);
+    // Group items by vendor
+    const vendorItemsMap = new Map();
+    for (const item of enrichedItems) {
+      const vKey = item.vendor ? item.vendor.toString() : 'nexus_direct';
+      if (!vendorItemsMap.has(vKey)) {
+        vendorItemsMap.set(vKey, []);
+      }
+      vendorItemsMap.get(vKey).push(item);
+    }
 
-    const order = new Order({
-      user: req.user._id,
-      orderNumber,
-      orderItems: enrichedItems,
-      vendors: Array.from(vendorsMap.values()),
-      shippingAddress,
-      paymentMethod: paymentMethod || 'Credit/Debit Card',
-      itemsPrice: Number(itemsPrice),
-      taxPrice: Number(taxPrice) || 0,
-      shippingPrice: Number(shippingPrice) || 0,
-      discountPrice: Number(discountPrice) || 0,
-      totalPrice: Number(totalPrice),
-      isPaid: paymentMethod === 'Cash on Delivery' ? false : true,
-      paidAt: paymentMethod === 'Cash on Delivery' ? null : new Date(),
-      status: 'Pending',
-      deliveryStatus: 'UNASSIGNED',
-      trackingNumber: 'TRK' + Math.floor(10000000 + Math.random() * 90000000),
-    });
+    const totalVendorCount = vendorItemsMap.size;
+    const baseOrderNumber = 'NX-' + Math.floor(100000 + Math.random() * 900000);
+    const createdOrders = [];
 
-    const createdOrder = await order.save();
+    // Fetch dynamic delivery payout config set by Admin
+    const deliverySetting = await Setting.findOne({ key: 'deliveryConfig' });
+    const configuredPayout = deliverySetting?.value?.payoutPerTrip;
+    const deliveryPayoutPerTrip = (configuredPayout !== undefined && Number(configuredPayout) >= 0)
+      ? Number(configuredPayout)
+      : 40;
+
+    let vendorIndex = 0;
+    for (const [vKey, vItems] of vendorItemsMap.entries()) {
+      const vData = vendorsMap.get(vKey);
+      const vItemSubtotal = vItems.reduce((sum, it) => sum + it.price * it.quantity, 0);
+      const proportion = Number(itemsPrice) > 0 ? vItemSubtotal / Number(itemsPrice) : 1 / totalVendorCount;
+
+      const vTaxPrice = Math.round(Number(taxPrice || 0) * proportion);
+      const vShippingPrice = Math.round(Number(shippingPrice || 40) / totalVendorCount);
+      const vDiscountPrice = Math.round(Number(discountPrice || 0) * proportion);
+      const vTotalPrice = vItemSubtotal + vTaxPrice + vShippingPrice - vDiscountPrice;
+
+      const vOrderNumber = totalVendorCount > 1 ? `${baseOrderNumber}-${vendorIndex + 1}` : baseOrderNumber;
+      const sampleItem = vItems[0];
+
+      const order = new Order({
+        user: req.user._id,
+        orderNumber: vOrderNumber,
+        groupOrderNumber: baseOrderNumber,
+        vendor: sampleItem.vendor || null,
+        vendorName: sampleItem.vendorName || 'Nexus Direct',
+        vendorStoreName: sampleItem.vendorStoreName || 'Nexus Direct Store',
+        vendorAddress: vData?.vendorAddress || {
+          street: 'Plot 18, Commercial Hub, Scheme 54',
+          city: 'Indore',
+          state: 'Madhya Pradesh',
+          postalCode: '452010',
+          phone: vData?.vendorPhone || '',
+        },
+        orderItems: vItems,
+        vendors: vData ? [vData] : [],
+        shippingAddress,
+        paymentMethod: paymentMethod || 'Credit/Debit Card',
+        itemsPrice: vItemSubtotal,
+        taxPrice: vTaxPrice,
+        shippingPrice: vShippingPrice,
+        discountPrice: vDiscountPrice,
+        totalPrice: vTotalPrice,
+        isPaid: paymentMethod === 'Cash on Delivery' ? false : true,
+        paidAt: paymentMethod === 'Cash on Delivery' ? null : new Date(),
+        status: 'Pending',
+        deliveryStatus: 'UNASSIGNED',
+        deliveryFee: deliveryPayoutPerTrip,
+        deliveryOption,
+        deliveryOptionName,
+        estimatedDeliveryTime,
+        trackingNumber: 'TRK' + Math.floor(10000000 + Math.random() * 90000000),
+      });
+
+      const savedOrder = await order.save();
+      createdOrders.push(savedOrder);
+      vendorIndex++;
+    }
 
     // Decrement stock & increment sold count
     for (const item of orderItems) {
@@ -122,51 +176,51 @@ export const createOrder = async (req, res) => {
 
     // Broadcast real-time targeted alerts to involved Vendors, Admin and connected clients
     if (global.io) {
-      // 1. Notify each involved vendor ONLY (No global broadcast to unintended vendors)
-      vendorsMap.forEach((subVendorData, vId) => {
-        const vendorSpecificItems = createdOrder.orderItems.filter(
-          (i) => i.vendor && i.vendor.toString() === vId.toString()
-        );
-        const vendorPayload = {
-          order: {
-            _id: createdOrder._id,
-            orderNumber: createdOrder.orderNumber,
-            totalPrice: createdOrder.totalPrice,
-            paymentMethod: createdOrder.paymentMethod,
-            shippingAddress: createdOrder.shippingAddress,
-            orderItems: vendorSpecificItems,
-            createdAt: createdOrder.createdAt,
-          },
+      for (const ord of createdOrders) {
+        if (ord.vendor) {
+          const vendorPayload = {
+            order: {
+              _id: ord._id,
+              orderNumber: ord.orderNumber,
+              totalPrice: ord.totalPrice,
+              paymentMethod: ord.paymentMethod,
+              shippingAddress: ord.shippingAddress,
+              orderItems: ord.orderItems,
+              createdAt: ord.createdAt,
+            },
+          };
+          global.io.to(`vendor_${ord.vendor.toString()}`).emit('vendor_new_order', vendorPayload);
+        }
+
+        const adminNotifPayload = {
+          id: Date.now() + Math.random(),
+          title: `New Order #${ord.orderNumber}`,
+          message: `${req.user?.name || 'Customer'} placed an order worth ₹${ord.totalPrice.toLocaleString('en-IN')} (${ord.orderItems.length} items from ${ord.vendorStoreName}).`,
+          time: 'Just now',
+          timestamp: new Date().toISOString(),
+          unread: true,
+          type: 'order',
+          link: '/orders',
+          orderId: ord._id,
+          orderNumber: ord.orderNumber,
+          totalPrice: ord.totalPrice,
         };
 
-        // Send single targeted alert to this vendor's private room
-        global.io.to(`vendor_${vId}`).emit('vendor_new_order', vendorPayload);
-      });
-
-      // 2. Real-time Admin Notification
-      const adminNotifPayload = {
-        id: Date.now() + Math.random(),
-        title: `New Order #${createdOrder.orderNumber}`,
-        message: `${req.user?.name || 'Customer'} placed an order worth ₹${createdOrder.totalPrice.toLocaleString('en-IN')} (${createdOrder.orderItems.length} items).`,
-        time: 'Just now',
-        timestamp: new Date().toISOString(),
-        unread: true,
-        type: 'order',
-        link: '/orders',
-        orderId: createdOrder._id,
-        orderNumber: createdOrder.orderNumber,
-        totalPrice: createdOrder.totalPrice,
-      };
-
-      global.io.emit('admin_notification', adminNotifPayload);
-      global.io.emit('new_admin_order', {
-        orderId: createdOrder._id,
-        orderNumber: createdOrder.orderNumber,
-        totalPrice: createdOrder.totalPrice,
-      });
+        global.io.emit('admin_notification', adminNotifPayload);
+        global.io.emit('new_admin_order', {
+          orderId: ord._id,
+          orderNumber: ord.orderNumber,
+          totalPrice: ord.totalPrice,
+        });
+      }
     }
 
-    res.status(201).json({ success: true, order: createdOrder });
+    res.status(201).json({
+      success: true,
+      order: createdOrders[0],
+      orders: createdOrders,
+      totalOrdersCreated: createdOrders.length,
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -557,6 +611,26 @@ export const verifyRazorpayPayment = async (req, res) => {
     }
 
     const updatedOrder = await order.save();
+
+    // Also update any sibling orders in the same group
+    if (order.groupOrderNumber) {
+      await Order.updateMany(
+        {
+          groupOrderNumber: order.groupOrderNumber,
+          _id: { $ne: order._id },
+        },
+        {
+          $set: {
+            isPaid: true,
+            paidAt: new Date(),
+            paymentMethod: 'Razorpay',
+            status: 'Confirmed',
+            confirmedAt: new Date(),
+            paymentResult: order.paymentResult,
+          },
+        }
+      );
+    }
 
     // Broadcast Real-Time Notification to Admin & Vendors via Socket.IO
     if (global.io) {

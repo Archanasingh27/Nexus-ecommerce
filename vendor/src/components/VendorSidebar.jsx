@@ -9,13 +9,11 @@ import {
   FiChevronRight,
   FiDollarSign,
   FiTrendingUp,
-  FiMessageSquare,
 } from 'react-icons/fi';
 import { useVendorAuth } from '../context/VendorAuthContext';
 
 const navItems = [
   { path: '/', label: 'Overview & KPIs', icon: FiGrid, color: 'text-orange-600 bg-orange-100/90 border-orange-300' },
-  { path: '/messages', label: 'Customer Inquiries & Chat', icon: FiMessageSquare, color: 'text-teal-700 bg-teal-100/90 border-teal-300' },
   { path: '/order-analytics', label: 'Order Analytics', icon: FiTrendingUp, color: 'text-blue-700 bg-blue-100/90 border-blue-300' },
   { path: '/product-analytics', label: 'Product Analytics', icon: FiBox, color: 'text-purple-700 bg-purple-100/90 border-purple-300' },
   { path: '/products', label: 'Store Products', icon: FiBox, color: 'text-amber-700 bg-amber-100/90 border-amber-300' },

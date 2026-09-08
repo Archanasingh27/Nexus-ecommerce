@@ -10,7 +10,7 @@ export const CategoryModal = ({ isOpen, onClose, category, onSaved }) => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    image: 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=600',
+    image: '',
     icon: 'grid',
     isFeatured: true,
   });

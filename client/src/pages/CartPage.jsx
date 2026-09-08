@@ -29,6 +29,10 @@ export const CartPage = () => {
     taxPrice,
     totalPrice,
     freeShippingRemaining,
+    deliveryOption,
+    setDeliveryOption,
+    selectedDeliveryOptionObj,
+    deliveryOptions,
   } = useCart();
 
   const [couponCode, setCouponCode] = useState('');
@@ -222,6 +226,63 @@ export const CartPage = () => {
             )}
           </div>
 
+          {/* Choose Delivery Speed */}
+          <div className="space-y-2 border-t border-yellow-200/80 pt-4">
+            <label className="text-xs font-black uppercase tracking-wider text-slate-800 flex items-center gap-1">
+              <span>⚡ Delivery Speed & Slot</span>
+            </label>
+            <div className="space-y-2">
+              {deliveryOptions.map((opt) => {
+                const isSelected = deliveryOption === opt.id;
+                const price =
+                  opt.freeAbove > 0 && itemsPrice >= opt.freeAbove
+                    ? opt.discountedPrice !== undefined
+                      ? opt.discountedPrice
+                      : 0
+                    : opt.price !== undefined
+                    ? opt.price
+                    : 0;
+                const badgeClass =
+                  opt.badgeColor ||
+                  (opt.badge === 'Fastest Delivery'
+                    ? 'bg-amber-100 text-amber-900 border-amber-300'
+                    : opt.badge === 'Most Popular'
+                    ? 'bg-emerald-100 text-emerald-900 border-emerald-300'
+                    : 'bg-blue-100 text-blue-900 border-blue-300');
+
+                return (
+                  <div
+                    key={opt.id}
+                    onClick={() => setDeliveryOption(opt.id)}
+                    className={`p-2.5 rounded-xl border cursor-pointer transition-all flex items-center justify-between gap-2 ${
+                      isSelected
+                        ? 'border-orange-500 bg-orange-50/60 ring-1 ring-orange-500/20'
+                        : 'border-slate-200 bg-white hover:border-slate-300'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className="text-base shrink-0">{opt.icon || '🚚'}</span>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="text-xs font-black text-slate-900 truncate">{opt.name}</span>
+                          {opt.badge && (
+                            <span className={`text-[9px] font-black px-1.5 py-0.2 rounded border ${badgeClass}`}>
+                              {opt.badge}
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-[10px] text-orange-600 font-bold block">{opt.time}</span>
+                      </div>
+                    </div>
+                    <span className="text-xs font-black text-slate-900 shrink-0">
+                      {price === 0 ? <span className="text-emerald-600">FREE</span> : `₹${price}`}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Breakdown */}
           <div className="space-y-3 text-xs border-t border-yellow-200/80 pt-4">
             <div className="flex items-center justify-between text-slate-600">
@@ -237,9 +298,14 @@ export const CartPage = () => {
             )}
 
             <div className="flex items-center justify-between text-slate-600">
-              <span>Estimated Shipping</span>
+              <span className="flex items-center gap-1">
+                <span>Shipping:</span>
+                <span className="text-slate-800 font-bold">
+                  {selectedDeliveryOptionObj ? `${selectedDeliveryOptionObj.icon} ${selectedDeliveryOptionObj.name}` : 'Standard'}
+                </span>
+              </span>
               <span className="font-bold text-slate-900">
-                {shippingPrice === 0 ? 'FREE' : formatPrice(shippingPrice)}
+                {shippingPrice === 0 ? <span className="text-emerald-600 font-black">FREE</span> : formatPrice(shippingPrice)}
               </span>
             </div>
 

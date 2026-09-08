@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ToastProvider } from './context/ToastContext';
 import { VendorAuthProvider, useVendorAuth } from './context/VendorAuthContext';
 
@@ -7,10 +7,10 @@ import { VendorNavbar } from './components/VendorNavbar';
 import { VendorSidebar } from './components/VendorSidebar';
 
 import { VendorDashboardPage } from './pages/VendorDashboardPage';
-import { VendorMessagesPage } from './pages/VendorMessagesPage';
 import { VendorOrderAnalyticsPage } from './pages/VendorOrderAnalyticsPage';
 import { VendorProductAnalyticsPage } from './pages/VendorProductAnalyticsPage';
 import { VendorProductsPage } from './pages/VendorProductsPage';
+import { VendorProductEditorPage } from './pages/VendorProductEditorPage';
 import { VendorOrdersPage } from './pages/VendorOrdersPage';
 import { VendorProfilePage } from './pages/VendorProfilePage';
 import { VendorLoginPage } from './pages/VendorLoginPage';
@@ -19,6 +19,14 @@ import { VendorRegisterPage } from './pages/VendorRegisterPage';
 const ProtectedVendorLayout = ({ children }) => {
   const { isAuthenticated, loading } = useVendorAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const location = useLocation();
+  const mainRef = useRef(null);
+
+  useEffect(() => {
+    if (mainRef.current) {
+      mainRef.current.scrollTop = 0;
+    }
+  }, [location.pathname]);
 
   if (loading) {
     return (
@@ -33,14 +41,11 @@ const ProtectedVendorLayout = ({ children }) => {
   }
 
   return (
-    <div className="h-screen w-screen bg-gradient-to-br from-white via-orange-50/30 to-amber-50/20 text-slate-900 flex flex-col overflow-hidden relative">
-      <div className="absolute top-0 right-1/4 w-96 h-96 bg-orange-200/20 rounded-full blur-3xl pointer-events-none -z-10" />
-      <div className="absolute bottom-10 left-10 w-80 h-80 bg-amber-200/20 rounded-full blur-3xl pointer-events-none -z-10" />
-
+    <div className="h-screen w-screen bg-slate-50 text-slate-900 flex flex-col overflow-hidden relative">
       <VendorNavbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
       <div className="flex-1 flex overflow-hidden relative z-10">
         <VendorSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        <main className="flex-1 overflow-y-auto max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8">
+        <main ref={mainRef} className="flex-1 overflow-y-auto max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8">
           {children}
         </main>
       </div>
@@ -66,14 +71,6 @@ export function App() {
               }
             />
             <Route
-              path="/messages"
-              element={
-                <ProtectedVendorLayout>
-                  <VendorMessagesPage />
-                </ProtectedVendorLayout>
-              }
-            />
-            <Route
               path="/order-analytics"
               element={
                 <ProtectedVendorLayout>
@@ -94,6 +91,22 @@ export function App() {
               element={
                 <ProtectedVendorLayout>
                   <VendorProductsPage />
+                </ProtectedVendorLayout>
+              }
+            />
+            <Route
+              path="/products/new"
+              element={
+                <ProtectedVendorLayout>
+                  <VendorProductEditorPage />
+                </ProtectedVendorLayout>
+              }
+            />
+            <Route
+              path="/products/edit/:id"
+              element={
+                <ProtectedVendorLayout>
+                  <VendorProductEditorPage />
                 </ProtectedVendorLayout>
               }
             />

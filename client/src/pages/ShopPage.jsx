@@ -173,6 +173,18 @@ export const ShopPage = () => {
     inStockOnly === true,
   ].filter(Boolean).length;
 
+  // Body scroll lock when mobile filter drawer is open
+  useEffect(() => {
+    if (mobileFilterOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileFilterOpen]);
+
   // Reset page to 1 when filters change
   useEffect(() => {
     setPage(1);
@@ -290,14 +302,14 @@ export const ShopPage = () => {
   return (
     <div className="w-full max-w-[1620px] mx-auto px-4 sm:px-8 lg:px-12 pt-1 pb-8">
       
-      {/* 2-Column Main View with Guaranteed Minimum Height so Sidebar Never Collapses */}
-      <div className="flex flex-col lg:flex-row gap-7 items-start relative min-h-[calc(100vh-5rem)]">
+      {/* 2-Column Main View with Guaranteed Minimum Height: Filter on Left, Products on Right */}
+      <div className="flex flex-col lg:flex-row gap-6 items-stretch lg:items-start w-full relative min-h-[calc(100vh-5rem)]">
         
         {/* ============================================================ */}
-        {/* FIXED ADMIN-STYLE GLASSMORPHISM FILTER SIDEBAR               */}
+        {/* FIXED ADMIN-STYLE GLASSMORPHISM FILTER SIDEBAR (LEFT SIDE)   */}
         {/* Starts flush from top with 0 dead space, sticks below navbar */}
         {/* ============================================================ */}
-        <aside className="hidden lg:flex flex-col justify-between w-80 lg:w-[320px] shrink-0 sticky top-20 self-start max-h-[calc(100vh-5.5rem)] overflow-y-auto no-scrollbar glass-sidebar p-3.5 lg:p-4 shadow-xl space-y-3.5 z-20 transition-all">
+        <aside className="hidden lg:flex flex-col justify-between w-64 lg:w-[260px] shrink-0 sticky top-20 self-start max-h-[calc(100vh-5.5rem)] overflow-y-auto no-scrollbar glass-sidebar p-3 shadow-xl space-y-3 z-20 transition-all">
           
           <div className="space-y-3.5">
             {/* Sidebar Header Console */}
@@ -586,7 +598,7 @@ export const ShopPage = () => {
         {/* Contains Header, Active Filters, and Product Catalog         */}
         {/* Guaranteed Minimum Height so Sidebar never gets squeezed    */}
         {/* ============================================================ */}
-        <div className="flex-1 min-w-0 space-y-5 min-h-[calc(100vh-8rem)] flex flex-col justify-between">
+        <div className="w-full flex-1 min-w-0 space-y-5 min-h-[calc(100vh-8rem)] flex flex-col justify-between">
           
           <div className="space-y-5">
             {/* Header Bar inside Right Column */}
@@ -640,62 +652,62 @@ export const ShopPage = () => {
               </div>
             </div>
 
-            {/* Active Filter Chips Bar */}
+            {/* Active Filter Chips Bar (Smooth Horizontal Scrolling) */}
             {activeFilterCount > 0 && (
-              <div className="flex items-center gap-2 flex-wrap bg-white/70 p-3 rounded-2xl border border-yellow-300/60 shadow-2xs">
-                <span className="text-xs font-black text-slate-500 uppercase tracking-wider flex items-center gap-1 mr-1">
-                  <FiFilter className="w-3 h-3 text-[#0d9488]" /> Active Filters:
+              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth p-2.5 sm:p-3 bg-white/80 rounded-2xl border border-yellow-300/60 shadow-2xs whitespace-nowrap">
+                <span className="text-xs font-black text-slate-500 uppercase tracking-wider flex items-center gap-1 shrink-0 mr-1">
+                  <FiFilter className="w-3 h-3 text-[#0d9488]" /> Active:
                 </span>
 
                 {selectedCategory !== 'all' && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-yellow-100 text-black text-xs font-bold rounded-lg border border-yellow-300">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-yellow-100 text-black text-xs font-bold rounded-lg border border-yellow-300 shrink-0">
                     Category: {currentCategoryObj?.name || selectedCategory}
-                    <button onClick={() => handleCategoryChange('all')} className="hover:text-rose-600 cursor-pointer">
+                    <button onClick={() => handleCategoryChange('all')} className="hover:text-rose-600 cursor-pointer ml-0.5">
                       <FiX className="w-3 h-3" />
                     </button>
                   </span>
                 )}
 
                 {selectedSubcategory !== 'all' && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-teal-100 text-teal-900 text-xs font-bold rounded-lg border border-teal-300">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-teal-100 text-teal-900 text-xs font-bold rounded-lg border border-teal-300 shrink-0">
                     Sub: {selectedSubcategory}
-                    <button onClick={() => handleSubcategoryChange('all')} className="hover:text-rose-600 cursor-pointer">
+                    <button onClick={() => handleSubcategoryChange('all')} className="hover:text-rose-600 cursor-pointer ml-0.5">
                       <FiX className="w-3 h-3" />
                     </button>
                   </span>
                 )}
 
                 {searchKeyword && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 text-slate-900 text-xs font-bold rounded-lg border border-slate-300">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 text-slate-900 text-xs font-bold rounded-lg border border-slate-300 shrink-0">
                     "{searchKeyword}"
-                    <button onClick={() => setSearchKeyword('')} className="hover:text-rose-600 cursor-pointer">
+                    <button onClick={() => setSearchKeyword('')} className="hover:text-rose-600 cursor-pointer ml-0.5">
                       <FiX className="w-3 h-3" />
                     </button>
                   </span>
                 )}
 
                 {priceRange < 150000 && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-100 text-amber-900 text-xs font-bold rounded-lg border border-amber-300">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-100 text-amber-900 text-xs font-bold rounded-lg border border-amber-300 shrink-0">
                     ≤ {formatPrice(priceRange)}
-                    <button onClick={() => setPriceRange(150000)} className="hover:text-rose-600 cursor-pointer">
+                    <button onClick={() => setPriceRange(150000)} className="hover:text-rose-600 cursor-pointer ml-0.5">
                       <FiX className="w-3 h-3" />
                     </button>
                   </span>
                 )}
 
                 {minRating > 0 && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-100 text-amber-900 text-xs font-bold rounded-lg border border-amber-300">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-100 text-amber-900 text-xs font-bold rounded-lg border border-amber-300 shrink-0">
                     {minRating}★ & Up
-                    <button onClick={() => setMinRating(0)} className="hover:text-rose-600 cursor-pointer">
+                    <button onClick={() => setMinRating(0)} className="hover:text-rose-600 cursor-pointer ml-0.5">
                       <FiX className="w-3 h-3" />
                     </button>
                   </span>
                 )}
 
                 {inStockOnly && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-100 text-emerald-900 text-xs font-bold rounded-lg border border-emerald-300">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-100 text-emerald-900 text-xs font-bold rounded-lg border border-emerald-300 shrink-0">
                     In Stock Only
-                    <button onClick={() => setInStockOnly(false)} className="hover:text-rose-600 cursor-pointer">
+                    <button onClick={() => setInStockOnly(false)} className="hover:text-rose-600 cursor-pointer ml-0.5">
                       <FiX className="w-3 h-3" />
                     </button>
                   </span>
@@ -703,7 +715,7 @@ export const ShopPage = () => {
 
                 <button
                   onClick={handleResetFilters}
-                  className="text-xs font-bold text-rose-600 hover:underline ml-auto cursor-pointer"
+                  className="text-xs font-bold text-rose-600 hover:underline shrink-0 ml-auto pl-2 cursor-pointer"
                 >
                   Clear All
                 </button>
@@ -771,20 +783,47 @@ export const ShopPage = () => {
                   ))}
                 </div>
               ) : products.length === 0 ? (
-                <div className="glass-panel p-12 text-center space-y-4 shadow-sm">
-                  <div className="w-16 h-16 rounded-full bg-[#fffdf0] text-amber-600 border border-yellow-300 flex items-center justify-center mx-auto text-2xl">
-                    🔍
+                <div className="bg-white/90 backdrop-blur-md rounded-3xl p-6 sm:p-10 md:p-12 text-center border border-yellow-300/70 shadow-lg space-y-4 sm:space-y-5 max-w-xl mx-auto my-4 transition-all">
+                  {/* Icon Badge */}
+                  <div className="relative inline-block">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-amber-50 border-2 border-yellow-400 flex items-center justify-center mx-auto shadow-md shadow-amber-500/10">
+                      <FiSearch className="w-8 h-8 sm:w-10 sm:h-10 text-amber-500" />
+                    </div>
+                    <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-rose-500 text-white flex items-center justify-center text-xs font-black shadow-xs">
+                      <FiX className="w-3.5 h-3.5 stroke-[3]" />
+                    </span>
                   </div>
-                  <h3 className="text-lg font-black text-slate-800">No matching products found</h3>
-                  <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                    Try choosing another subcategory or resetting filters to explore all available products.
-                  </p>
-                  <button
-                    onClick={handleResetFilters}
-                    className="px-6 py-2.5 bg-[#fae125] hover:bg-yellow-300 text-black font-black text-xs rounded-xl shadow-md border border-yellow-400 cursor-pointer"
-                  >
-                    Reset All Filters
-                  </button>
+
+                  {/* Title & Description */}
+                  <div className="space-y-1.5 px-2">
+                    <h3 className="text-base sm:text-xl font-black text-slate-900 tracking-tight">
+                      No Matching Products Found
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
+                      We couldn't find any products matching your current filters. Try relaxing your search criteria or resetting filters.
+                    </p>
+                  </div>
+
+                  {/* Action Buttons for Mobile & Desktop */}
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 pt-2 max-w-sm mx-auto w-full">
+                    {/* Reset All Filters Button */}
+                    <button
+                      onClick={handleResetFilters}
+                      className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-[#fae125] hover:bg-yellow-400 text-black font-black text-xs rounded-xl shadow-md border-2 border-yellow-400 cursor-pointer active:scale-95 transition-all"
+                    >
+                      <FiRotateCcw className="w-3.5 h-3.5 text-black" />
+                      <span>Reset All Filters</span>
+                    </button>
+
+                    {/* Adjust Filters (Opens Drawer on Mobile) */}
+                    <button
+                      onClick={() => setMobileFilterOpen(true)}
+                      className="lg:hidden w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl border border-slate-200 cursor-pointer active:scale-95 transition-all"
+                    >
+                      <FiSliders className="w-3.5 h-3.5 text-slate-700" />
+                      <span>Adjust Filters</span>
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5 sm:gap-6 transition-opacity duration-300 ${isFetching ? 'opacity-50' : 'opacity-100'}`}>
@@ -825,31 +864,52 @@ export const ShopPage = () => {
 
       {/* Mobile Filter Drawer */}
       {mobileFilterOpen && (
-        <div className="fixed inset-0 z-[9999] overflow-hidden lg:hidden">
+        <div className="fixed inset-0 z-[9999] flex justify-start lg:hidden">
+          {/* Backdrop */}
           <div
             onClick={() => setMobileFilterOpen(false)}
-            className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
           />
-          <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
-            <div className="w-screen max-w-sm glass-sidebar p-6 overflow-y-auto space-y-6 animate-in slide-in-from-right duration-300 border-l-2 border-yellow-300">
-              <div className="flex items-center justify-between pb-4 border-b border-yellow-300/40">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-[#fae125] text-slate-950 border border-yellow-400 flex items-center justify-center shadow-2xs font-black">
-                    <FiSliders className="w-4 h-4 text-black" />
-                  </div>
-                  <h3 className="text-sm font-black text-slate-900">Filter Console</h3>
+
+          {/* Sliding Drawer Container */}
+          <div className="relative w-full max-w-[280px] sm:max-w-[310px] h-full bg-white shadow-2xl flex flex-col z-10 animate-in slide-in-from-left duration-250">
+            
+            {/* 1. Sticky Drawer Header */}
+            <div className="p-3.5 bg-white border-b border-yellow-300/50 flex items-center justify-between shrink-0 shadow-2xs">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-xl bg-[#fae125] text-black border border-yellow-400 flex items-center justify-center shadow-xs font-black">
+                  <FiSliders className="w-3.5 h-3.5 text-black" />
                 </div>
-                <button
-                  onClick={() => setMobileFilterOpen(false)}
-                  className="p-1.5 rounded-xl glass-pill text-slate-700 hover:text-black cursor-pointer"
-                >
-                  <FiX className="w-5 h-5" />
-                </button>
+                <div>
+                  <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 leading-none">Filter Console</h3>
+                  <span className="text-[10px] font-bold text-slate-400 mt-0.5 block">
+                    {totalProducts || products.length} matching items
+                  </span>
+                </div>
               </div>
 
-              {/* Search keyword */}
-              <div className="space-y-1.5">
-                <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">
+              <div className="flex items-center gap-2">
+                {activeFilterCount > 0 && (
+                  <span className="px-2 py-0.5 rounded-full bg-[#0d9488] text-white text-[10px] font-black shadow-xs">
+                    {activeFilterCount} active
+                  </span>
+                )}
+                <button
+                  onClick={() => setMobileFilterOpen(false)}
+                  className="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 transition-colors cursor-pointer"
+                  aria-label="Close filters"
+                >
+                  <FiX className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* 2. Scrollable Filter Body */}
+            <div className="flex-1 overflow-y-auto p-3.5 space-y-4">
+              
+              {/* Keyword Search */}
+              <div className="space-y-1">
+                <div className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">
                   Keyword Search
                 </div>
                 <div className="relative">
@@ -858,34 +918,45 @@ export const ShopPage = () => {
                     value={searchKeyword}
                     onChange={(e) => setSearchKeyword(e.target.value)}
                     placeholder="Search catalog..."
-                    className="w-full bg-white/90 border border-yellow-300/80 text-xs text-slate-900 rounded-xl py-2 pl-8 pr-3 outline-none focus:border-yellow-400 font-semibold"
+                    className="w-full bg-white/90 border border-yellow-300/80 text-xs text-slate-900 rounded-xl py-1.5 pl-7 pr-6 outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-300/30 transition-all font-semibold"
                   />
-                  <FiSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                  <FiSearch className="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400" />
+                  {searchKeyword && (
+                    <button
+                      onClick={() => setSearchKeyword('')}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-black cursor-pointer"
+                    >
+                      <FiX className="w-3 h-3" />
+                    </button>
+                  )}
                 </div>
               </div>
 
-              {/* Categories */}
-              <div className="space-y-1.5">
-                <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">
-                  Categories
+              {/* Categories Accordion */}
+              <div className="space-y-1">
+                <div className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">
+                  Product Categories
                 </div>
-                <div className="space-y-1.5 max-h-60 overflow-y-auto pr-1 no-scrollbar">
+                <div className="space-y-1 max-h-64 overflow-y-auto pr-1">
+                  {/* All Categories Option */}
                   <button
-                    onClick={() => {
-                      handleCategoryChange('all');
-                      setMobileFilterOpen(false);
-                    }}
-                    className={`w-full group flex items-center justify-between px-3 py-2 rounded-2xl text-xs font-black transition-all cursor-pointer border ${
+                    onClick={() => handleCategoryChange('all')}
+                    className={`w-full group flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer border ${
                       selectedCategory === 'all'
-                        ? 'bg-[#fae125] text-black border-2 border-yellow-400 shadow-xs'
-                        : 'bg-white/60 text-slate-800 hover:bg-yellow-400/10'
+                        ? 'bg-[#fae125] text-black border-2 border-yellow-400 shadow-xs scale-[1.01]'
+                        : 'bg-white/60 text-slate-800 hover:text-black hover:bg-yellow-50 border-yellow-200/50 hover:border-yellow-300'
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <FiGrid className="w-3.5 h-3.5" />
+                      <FiGrid className="w-3 h-3 text-black" />
                       <span>All Categories</span>
                     </div>
+                    {selectedCategory === 'all' && (
+                      <FiCheck className="w-3.5 h-3.5 text-black shrink-0" />
+                    )}
                   </button>
+
+                  {/* Individual Categories */}
                   {categories.map((cat) => {
                     const isSelected = selectedCategory === cat.slug;
                     const isExpanded = expandedCategory === cat.slug;
@@ -896,61 +967,62 @@ export const ShopPage = () => {
                       <div key={cat._id} className="space-y-1">
                         <button
                           onClick={() => handleCategoryChange(cat.slug)}
-                          className={`w-full group flex items-center justify-between px-3 py-2 rounded-2xl text-xs font-black transition-all cursor-pointer border ${
+                          className={`w-full group flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer border ${
                             isSelected
-                              ? 'bg-[#fae125] text-black border-2 border-yellow-400 shadow-xs'
-                              : 'bg-white/60 text-slate-800 hover:bg-yellow-400/10'
+                              ? 'bg-[#fae125] text-black border-2 border-yellow-400 shadow-xs scale-[1.01]'
+                              : 'bg-white/60 text-slate-800 hover:text-black hover:bg-yellow-50 border-yellow-200/50 hover:border-yellow-300'
                           }`}
                         >
-                          <div className="flex items-center gap-2.5 truncate">
-                            <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 border ${meta.color}`}>
+                          <div className="flex items-center gap-2 truncate">
+                            <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 border ${isSelected ? 'bg-black text-[#fae125] border-black shadow-xs' : `${meta.color}`}`}>
                               <Icon className="w-3 h-3" />
                             </div>
                             <span className="truncate">{cat.name}</span>
                           </div>
-                          <FiChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isExpanded ? 'rotate-180 text-black' : isSelected ? 'text-black' : 'text-slate-400'}`} />
+                          {cat.subcategories && cat.subcategories.length > 0 && (
+                            <FiChevronDown
+                              className={`w-3 h-3 transition-transform duration-200 ${
+                                isExpanded ? 'rotate-180 text-black' : isSelected ? 'text-black' : 'text-slate-400'
+                              }`}
+                            />
+                          )}
                         </button>
 
+                        {/* Collapsible Subcategories */}
                         {cat.subcategories && cat.subcategories.length > 0 && (
                           <div
-                            className={`grid transition-[grid-template-rows,opacity] duration-300 ease-in-out ${
+                            className={`grid transition-[grid-template-rows,opacity] duration-200 ease-in-out ${
                               isExpanded
                                 ? 'grid-rows-[1fr] opacity-100'
                                 : 'grid-rows-[0fr] opacity-0 pointer-events-none'
                             }`}
                           >
                             <div className="overflow-hidden">
-                              <div className="relative pl-3.5 my-1.5 ml-3 border-l-2 border-yellow-400 space-y-1">
+                              <div className="relative pl-3 my-1 ml-3 border-l-2 border-yellow-300 space-y-1">
                                 <button
-                                  onClick={() => {
-                                    handleSubcategoryChange('all');
-                                    setMobileFilterOpen(false);
-                                  }}
-                                  className={`w-full text-left px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition-all flex items-center gap-2 cursor-pointer ${
-                                    selectedSubcategory === 'all'
-                                      ? 'bg-yellow-400/30 text-slate-950 font-black'
+                                  onClick={() => handleSubcategoryChange('all')}
+                                  className={`w-full text-left px-2 py-1 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                                    selectedSubcategory === 'all' && isSelected
+                                      ? 'bg-[#fae125] text-black font-black'
                                       : 'text-slate-600 hover:text-slate-950'
                                   }`}
                                 >
-                                  <span className={`w-1.5 h-1.5 rounded-full ${selectedSubcategory === 'all' ? 'bg-[#fae125] ring-2 ring-yellow-400' : 'bg-slate-300'}`} />
+                                  <span className={`w-1.5 h-1.5 rounded-full ${selectedSubcategory === 'all' && isSelected ? 'bg-black' : 'bg-slate-300'}`} />
                                   <span>All {cat.name}</span>
                                 </button>
                                 {cat.subcategories.map((sub) => {
-                                  const isSubActive = selectedSubcategory === sub.slug;
+                                  const isSubActive = selectedSubcategory === sub.slug && isSelected;
                                   return (
                                     <button
                                       key={sub.slug}
-                                      onClick={() => {
-                                        handleSubcategoryChange(sub.slug);
-                                        setMobileFilterOpen(false);
-                                      }}
-                                      className={`w-full text-left px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition-all flex items-center gap-2 cursor-pointer ${
+                                      onClick={() => handleSubcategoryChange(sub.slug)}
+                                      className={`w-full text-left px-2 py-1 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                                         isSubActive
-                                          ? 'bg-yellow-400/30 text-slate-950 font-black'
+                                          ? 'bg-[#fae125] text-black font-black shadow-2xs'
                                           : 'text-slate-600 hover:text-slate-950'
                                       }`}
                                     >
-                                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isSubActive ? 'bg-black ring-2 ring-yellow-400' : 'bg-yellow-400/60'}`} />
+                                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isSubActive ? 'bg-black' : 'bg-slate-300'}`} />
                                       <span className="truncate">{sub.name}</span>
                                     </button>
                                   );
@@ -965,11 +1037,11 @@ export const ShopPage = () => {
                 </div>
               </div>
 
-              {/* Price Range */}
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">
-                  <span>Max Price</span>
-                  <span className="text-[#0d9488] text-sm font-black font-mono">{formatPrice(priceRange)}</span>
+              {/* Price Range Slider */}
+              <div className="space-y-1.5 pt-2 border-t border-yellow-300/40">
+                <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-widest text-slate-400 px-1">
+                  <span>Price Range</span>
+                  <span className="text-[#0d9488] font-bold font-mono text-[11px]">Up to {formatPrice(priceRange)}</span>
                 </div>
                 <input
                   type="range"
@@ -978,41 +1050,59 @@ export const ShopPage = () => {
                   step="1000"
                   value={priceRange}
                   onChange={(e) => setPriceRange(Number(e.target.value))}
-                  className="w-full accent-[#0d9488] cursor-pointer"
+                  className="w-full accent-[#0d9488] cursor-pointer h-1.5 bg-yellow-200 rounded-lg"
                 />
+                <div className="flex justify-between text-[9px] font-bold text-slate-400">
+                  <span>₹500</span>
+                  <span>₹1,50,000</span>
+                </div>
               </div>
 
-              {/* In Stock Only */}
-              <div className="pt-2 border-t border-yellow-200/50">
-                <label className="flex items-center gap-2 cursor-pointer">
+              {/* In Stock Toggle */}
+              <div className="pt-2 border-t border-yellow-300/40">
+                <label className="flex items-center justify-between p-2 rounded-xl bg-white/60 border border-yellow-200/80 cursor-pointer hover:bg-yellow-50 transition-colors">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-[11px] font-black text-slate-800">
+                      In-Stock Items Only
+                    </span>
+                  </div>
                   <input
                     type="checkbox"
                     checked={inStockOnly}
                     onChange={(e) => setInStockOnly(e.target.checked)}
-                    className="w-4 h-4 rounded text-[#0d9488] accent-[#0d9488] cursor-pointer"
+                    className="w-3.5 h-3.5 rounded text-[#0d9488] accent-[#0d9488] cursor-pointer"
                   />
-                  <span className="text-xs font-bold text-slate-800">In-Stock Items Only</span>
                 </label>
               </div>
 
-              <div className="pt-4 flex gap-3">
-                <button
-                  onClick={() => {
-                    handleResetFilters();
-                    setMobileFilterOpen(false);
-                  }}
-                  className="flex-1 py-2.5 glass-pill text-slate-700 font-bold text-xs rounded-xl"
-                >
-                  Reset
-                </button>
-                <button
-                  onClick={() => setMobileFilterOpen(false)}
-                  className="flex-1 py-2.5 bg-[#fae125] hover:bg-yellow-300 text-black font-black text-xs rounded-xl shadow-md border border-yellow-400"
-                >
-                  Show Results
-                </button>
-              </div>
             </div>
+
+            {/* 3. Sticky Drawer Footer: Reset All & Apply Buttons */}
+            <div className="p-3.5 bg-white border-t border-yellow-300/50 flex items-center gap-2 shrink-0 shadow-lg">
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                disabled={activeFilterCount === 0}
+                className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 border cursor-pointer ${
+                  activeFilterCount > 0
+                    ? 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200 active:scale-95'
+                    : 'bg-slate-100 text-slate-400 border-slate-200 opacity-60 cursor-not-allowed'
+                }`}
+              >
+                <FiRotateCcw className="w-3.5 h-3.5" />
+                <span>Reset All</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setMobileFilterOpen(false)}
+                className="flex-1 py-2.5 px-3 bg-[#fae125] hover:bg-yellow-400 text-black border-2 border-yellow-400 font-black text-xs rounded-xl shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
+              >
+                <FiCheck className="w-3.5 h-3.5 text-black stroke-[3]" />
+                <span>Apply ({totalProducts || products.length})</span>
+              </button>
+            </div>
+
           </div>
         </div>
       )}

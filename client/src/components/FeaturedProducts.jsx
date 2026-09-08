@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FiAward, FiStar, FiShoppingBag, FiHeart, FiZap, FiEye } from 'react-icons/fi';
+import { FiAward, FiStar, FiShoppingBag, FiShoppingCart, FiHeart, FiZap, FiEye } from 'react-icons/fi';
 import { ProductCard } from './ProductCard';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -143,13 +143,13 @@ export const FeaturedProducts = ({ products = [], onQuickView }) => {
                   )}
                 </div>
 
-                <button
-                  onClick={() => addToCart(spotlightProduct, 1)}
-                  className="px-5 py-2.5 bg-[#0d9488] hover:bg-teal-700 text-white text-xs font-black rounded-xl shadow-md border border-teal-700 flex items-center gap-2 transition-all shrink-0 cursor-pointer"
-                >
-                  <FiShoppingBag className="w-4 h-4 text-white" />
-                  <span>Add to Bag</span>
-                </button>
+              <button
+                onClick={() => addToCart(spotlightProduct, 1)}
+                className="px-5 py-2.5 bg-[#fae125] hover:bg-yellow-300 text-slate-950 text-xs font-black rounded-xl shadow-md border border-yellow-300 flex items-center gap-2 transition-all shrink-0 cursor-pointer"
+              >
+                <FiShoppingCart className="w-4 h-4 text-black" />
+                <span>Add to Cart</span>
+              </button>
               </div>
             </div>
 

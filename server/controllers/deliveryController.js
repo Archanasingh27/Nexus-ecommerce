@@ -1,5 +1,6 @@
 import User from '../models/User.js';
 import Order from '../models/Order.js';
+import Setting from '../models/Setting.js';
 import jwt from 'jsonwebtoken';
 
 // Helper to generate JWT
@@ -14,6 +15,66 @@ const generateToken = (id) => {
 // =========================================================================
 // DELIVERY PARTNER APP CONTROLLERS
 // =========================================================================
+
+// @desc    Get current active delivery configuration (payout, radius, city)
+// @route   GET /delivery/config
+// @access  Public / Private
+export const getDeliveryPublicConfig = async (req, res) => {
+  try {
+    const setting = await Setting.findOne({ key: 'deliveryConfig' });
+    const config = setting?.value || {
+      payoutPerTrip: 40,
+      coverageRadiusKm: 5.0,
+      customerDeliveryFee: 40,
+      freeDeliveryThreshold: 999,
+      serviceCity: 'Indore',
+      deliveryOptions: [
+        {
+          id: 'instant',
+          name: 'Instant Delivery',
+          time: '30 - 45 Mins',
+          icon: '⚡',
+          description: 'Direct hyper-local courier from nearest merchant hub',
+          badge: 'Fastest Delivery',
+          price: 49,
+          discountedPrice: 49,
+          freeAbove: 0,
+          isActive: true,
+          isDefault: false,
+        },
+        {
+          id: '4hour',
+          name: '4-Hour Express',
+          time: 'Within 4 Hours',
+          icon: '🕒',
+          description: 'Standard same-day fast fulfillment across Indore',
+          badge: 'Most Popular',
+          price: 39,
+          discountedPrice: 0,
+          freeAbove: 999,
+          isActive: true,
+          isDefault: true,
+        },
+        {
+          id: 'nextday',
+          name: 'Next Day Delivery',
+          time: 'Tomorrow by 2:00 PM',
+          icon: '🚚',
+          description: 'Scheduled next-day eco delivery slot',
+          badge: 'Free Delivery',
+          price: 0,
+          discountedPrice: 0,
+          freeAbove: 0,
+          isActive: true,
+          isDefault: false,
+        },
+      ],
+    };
+    res.json({ success: true, config });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 // @desc    Delivery Partner Login
 // @route   POST /delivery/login
@@ -173,7 +234,15 @@ export const getAvailableOrders = async (req, res) => {
         .lean();
     }
 
-    res.json({ success: true, count: orders.length, orders });
+    // Fetch live delivery config
+    const setting = await Setting.findOne({ key: 'deliveryConfig' });
+    const deliveryConfig = setting?.value || {
+      payoutPerTrip: 40,
+      coverageRadiusKm: 5.0,
+      serviceCity: rider.serviceCity || 'Indore',
+    };
+
+    res.json({ success: true, count: orders.length, orders, deliveryConfig });
   } catch (error) {
     console.error('[getAvailableOrders Error]:', error);
     res.status(500).json({ success: false, message: error.message });

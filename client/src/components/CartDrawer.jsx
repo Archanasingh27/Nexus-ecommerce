@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiX, FiTrash2, FiPlus, FiMinus, FiShoppingBag, FiArrowRight, FiCheckCircle } from 'react-icons/fi';
+import { FiX, FiTrash2, FiPlus, FiMinus, FiShoppingCart, FiArrowRight, FiCheckCircle } from 'react-icons/fi';
 import { useCart } from '../context/CartContext';
 import { formatPrice } from '../utils/helpers';
 
@@ -38,10 +38,10 @@ export const CartDrawer = () => {
           <div className="p-4 sm:p-5 border-b border-yellow-200/80 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-[#fae125] border border-yellow-400 flex items-center justify-center text-black shadow-xs">
-                <FiShoppingBag className="w-4 h-4 text-black" />
+                <FiShoppingCart className="w-4 h-4 text-black" />
               </div>
               <h2 className="text-base font-black text-slate-900">
-                Your Shopping Bag ({cartItems.length})
+                Your Shopping Cart ({cartItems.length})
               </h2>
             </div>
             <button

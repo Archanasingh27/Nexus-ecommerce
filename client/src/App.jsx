@@ -9,6 +9,7 @@ import { Navbar } from './components/Navbar';
 import { CartDrawer } from './components/CartDrawer';
 import { Footer } from './components/Footer';
 import { FloatingChatButton } from './components/FloatingChatButton';
+import { ScrollToTop } from './components/ScrollToTop';
 
 import { HomePage } from './pages/HomePage';
 import { ShopPage } from './pages/ShopPage';
@@ -19,11 +20,13 @@ import { CheckoutPage } from './pages/CheckoutPage';
 import { OrdersPage } from './pages/OrdersPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { AuthPage } from './pages/AuthPage';
+import { SupportPage } from './pages/SupportPage';
 
 export function App() {
   return (
     <ToastProvider>
       <Router>
+        <ScrollToTop />
         <AuthProvider>
           <CartProvider>
             <WishlistProvider>
@@ -45,6 +48,7 @@ export function App() {
                     <Route path="/orders" element={<OrdersPage />} />
                     <Route path="/profile" element={<ProfilePage />} />
                     <Route path="/auth" element={<AuthPage />} />
+                    <Route path="/support" element={<SupportPage />} />
                   </Routes>
                 </main>
                 <FloatingChatButton />

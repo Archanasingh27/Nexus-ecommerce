@@ -115,25 +115,37 @@ export const VendorOrderDetailModal = ({ isOpen, onClose, order, onUpdated }) =>
             </div>
           </div>
 
-          {/* Customer & Delivery Details */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
-              <div className="flex items-center gap-1.5 font-bold text-slate-900 mb-1">
-                <FiUser className="text-orange-500" />
-                <span>Customer Information</span>
+          {/* Customer & Shipping Destination Details */}
+          <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-start">
+              {/* Customer Column */}
+              <div className="sm:col-span-5 space-y-1 sm:border-r sm:border-slate-200 sm:pr-4">
+                <div className="text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                  <FiUser className="text-orange-500 w-3.5 h-3.5" />
+                  <span>Customer Name</span>
+                </div>
+                <div className="font-black text-base text-slate-900 tracking-tight">
+                  {order.shippingAddress?.fullName || order.user?.name || 'Customer'}
+                </div>
+                <div className="text-[10px] text-slate-400 font-medium">
+                  Order Recipient
+                </div>
               </div>
-              <div className="font-extrabold text-slate-900">{order.shippingAddress?.fullName || order.user?.name}</div>
-              <div className="text-slate-500">{order.shippingAddress?.phone || 'No phone provided'}</div>
-              <div className="text-slate-600 text-[11px]">{order.user?.email}</div>
-            </div>
 
-            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
-              <div className="flex items-center gap-1.5 font-bold text-slate-900 mb-1">
-                <FiMapPin className="text-orange-500" />
-                <span>Delivery Address (Indore)</span>
+              {/* Shipping Address Column */}
+              <div className="sm:col-span-7 space-y-1 sm:pl-2">
+                <div className="text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                  <FiMapPin className="text-orange-500 w-3.5 h-3.5" />
+                  <span>Shipping & Delivery Destination</span>
+                </div>
+                <div className="font-bold text-slate-900 text-xs leading-relaxed">
+                  {order.shippingAddress?.street ? `${order.shippingAddress.street}, ` : ''}
+                  {order.shippingAddress?.city || 'Indore'}, {order.shippingAddress?.state || 'Madhya Pradesh'} - {order.shippingAddress?.postalCode || '452001'}
+                </div>
+                <div className="text-slate-400 text-[10px]">
+                  📍 Destination address for package labeling & courier handover.
+                </div>
               </div>
-              <div className="font-semibold text-slate-900">{order.shippingAddress?.street}</div>
-              <div className="text-slate-500 text-[11px]">{order.shippingAddress?.city}, {order.shippingAddress?.state} ({order.shippingAddress?.postalCode})</div>
             </div>
           </div>
 
