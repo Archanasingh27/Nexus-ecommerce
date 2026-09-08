@@ -375,9 +375,7 @@ export const ActiveDeliveriesPage = () => {
                       <span>
                         {updatingId === order._id
                           ? 'Processing...'
-                          : isCOD
-                            ? `Verify OTP & Collect ₹${order.totalPrice}`
-                            : 'Enter Customer OTP & Handover'}
+                          : 'Verify OTP & Handover'}
                       </span>
                     </button>
                   )}
